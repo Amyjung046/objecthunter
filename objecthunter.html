@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>อาณาจักรแฟนตาซี : ภารกิจตามหาของวิเศษ</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#07040d;font-family:'Mitr',sans-serif;color:#f3e9d2;user-select:none;-webkit-user-select:none;touch-action:none}
+canvas{display:block}
+.hidden{display:none!important}
+.screen{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:10}
+.panel{background:linear-gradient(160deg,rgba(44,22,66,.93),rgba(14,8,24,.96));border:2px solid #c9a24a;border-radius:20px;padding:26px 32px;box-shadow:0 0 50px rgba(201,162,74,.3);text-align:center;max-width:92vw;max-height:92vh;overflow:auto}
+h1{font-size:38px;color:#f5d27a;text-shadow:0 0 20px rgba(245,210,122,.55);line-height:1.2;font-weight:600}
+h1 span{display:block;font-size:20px;color:#e6d9ff;font-weight:300;margin-top:4px}
+h2{color:#f5d27a;font-weight:500;margin-bottom:10px}
+.tag{margin:10px 0;opacity:.85;line-height:1.5;font-size:15px}
+.best{margin:8px 0;font-size:17px}.best b{color:#f5d27a;font-size:20px}
+.btn{display:block;width:100%;margin-top:10px;padding:11px 18px;font-family:inherit;font-size:17px;border-radius:12px;border:1px solid #c9a24a;background:rgba(255,255,255,.06);color:#f3e9d2;cursor:pointer}
+.btn:hover{background:rgba(201,162,74,.22)}
+.btn.primary{background:linear-gradient(180deg,#ecc565,#a77b25);color:#2a1606;font-weight:600;border:none}
+.btn.small{font-size:15px;padding:7px}
+.crest{font-size:40px;color:#f5d27a;text-shadow:0 0 20px #f5d27a}
+.how-list{text-align:left;line-height:1.8;margin:6px 0;padding-left:18px;font-size:14.5px}
+
+/* Theme Grid */
+.theme-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:14px 0}
+.theme-card{padding:14px;border:2px solid rgba(201,162,74,.4);border-radius:14px;cursor:pointer;background:rgba(255,255,255,.05);transition:.2s;text-align:center}
+.theme-card:hover{background:rgba(255,255,255,.12);transform:translateY(-2px)}
+.theme-card.sel{border-color:#f5d27a;background:rgba(245,210,122,.22);box-shadow:0 0 15px rgba(245,210,122,.4)}
+.theme-card .ti{font-size:36px;margin-bottom:4px}
+.theme-card .tn{font-size:16px;font-weight:600;color:#f5d27a}
+
+#select{justify-content:flex-end;align-items:stretch;pointer-events:none}
+.select-panel{pointer-events:auto;width:min(470px,100%);height:100%;overflow-y:auto;padding:22px;background:linear-gradient(180deg,rgba(30,16,48,.95),rgba(12,7,22,.97));border-left:2px solid #c9a24a}
+.gender{display:flex;gap:10px;margin:8px 0 14px}
+.gbtn{flex:1;padding:10px;font-family:inherit;font-size:17px;border-radius:12px;border:1px solid rgba(201,162,74,.5);background:rgba(255,255,255,.05);color:#f3e9d2;cursor:pointer}
+.gbtn.sel{background:rgba(245,210,122,.22);border-color:#f5d27a}
+.char-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.char-card{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid rgba(201,162,74,.3);border-radius:10px;cursor:pointer;background:rgba(255,255,255,.04);font-size:13.5px;line-height:1.3}
+.char-card.sel{border-color:#f5d27a;background:rgba(245,210,122,.18)}
+.sw{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.55);flex:none}
+.preview-name{position:fixed;left:0;right:470px;bottom:36px;text-align:center;font-size:24px;color:#f5d27a;text-shadow:0 0 12px #000;pointer-events:none}
+.preview-hint{position:fixed;left:0;right:470px;bottom:12px;text-align:center;font-size:13px;opacity:.6;pointer-events:none}
+
+#hud{position:fixed;inset:0;pointer-events:none;z-index:5}
+.chip{background:rgba(14,8,24,.78);border:1px solid rgba(201,162,74,.8);border-radius:12px;padding:6px 14px}
+.hud-top{position:absolute;top:12px;left:50%;transform:translateX(-50%);display:flex;gap:12px}
+.lbl{font-size:12px;opacity:.75}
+.mission .tgt{font-size:19px;color:#f5d27a}
+.timer{font-size:32px;font-weight:600;color:#f5d27a;min-width:112px;display:flex;align-items:center;justify-content:center}
+.timer.warn{color:#ffb347}.timer.low{color:#ff6b6b;animation:pulse .5s infinite alternate}
+@keyframes pulse{to{transform:scale(1.08)}}
+.scorebox{text-align:center;min-width:90px}.scorebox b{font-size:24px;color:#fff}
+.scorebox.bump{animation:bump .35s}@keyframes bump{50%{transform:scale(1.18)}}
+#minimap{position:absolute;top:12px;right:12px;width:200px;height:200px;border:2px solid #c9a24a;border-radius:12px;background:#0d0816;pointer-events:auto;cursor:pointer}
+.loc{position:absolute;top:220px;right:12px;width:200px;text-align:center;font-size:14px}
+.mini-hint{font-size:11px;opacity:.6}
+.bag{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:15px;white-space:nowrap}
+.good{color:#8cff9e}.bad{color:#ff8080}
+.prompt{position:absolute;bottom:64px;left:50%;transform:translateX(-50%);background:rgba(245,210,122,.95);color:#2a1606;padding:9px 20px;border-radius:30px;font-weight:500;white-space:nowrap}
+.help{position:absolute;left:12px;bottom:12px;font-size:12px;opacity:.65;max-width:300px;line-height:1.5}
+#joy{position:absolute;left:28px;bottom:60px;width:140px;height:140px;border-radius:50%;background:rgba(255,255,255,.07);border:2px solid rgba(201,162,74,.6);pointer-events:auto;touch-action:none}
+#joyKnob{position:absolute;left:45px;top:45px;width:50px;height:50px;border-radius:50%;background:radial-gradient(#ffe7a8,#c9a24a)}
+.grab{position:absolute;right:26px;bottom:80px;width:90px;height:90px;border-radius:50%;pointer-events:auto;border:2px solid #f5d27a;background:radial-gradient(rgba(245,210,122,.4),rgba(40,20,60,.85));color:#fff;font-family:inherit;font-size:30px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.grab span{font-size:14px}
+#btnMute{position:fixed;left:12px;top:12px;z-index:30;width:44px;height:44px;border-radius:50%;border:1px solid #c9a24a;background:rgba(14,8,24,.8);color:#fff;font-size:20px;cursor:pointer}
+.float{position:absolute;left:50%;top:40%;transform:translate(-50%,0);font-size:30px;font-weight:600;white-space:nowrap;animation:floatUp 1.3s forwards}
+.float.good{text-shadow:0 0 14px #2f9e44,0 0 3px #000}.float.bad{text-shadow:0 0 14px #c92a2a,0 0 3px #000}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,20px)}15%{opacity:1;transform:translate(-50%,0)}100%{opacity:0;transform:translate(-50%,-90px)}}
+#bigmap{background:rgba(5,2,10,.82);flex-direction:column;gap:8px;z-index:8}
+#bigmapCanvas{width:min(620px,88vmin);height:min(620px,88vmin);border:2px solid #c9a24a;border-radius:14px}
+.intro-emoji{font-size:80px;margin:6px 0}
+#introCount{font-size:56px;color:#f5d27a;height:70px;font-weight:600}
+.final-score{font-size:72px;font-weight:600;color:#f5d27a;line-height:1.1}
+.stats{display:flex;gap:12px;justify-content:center;margin:16px 0}
+.stats>div{background:rgba(255,255,255,.06);border:1px solid rgba(201,162,74,.35);border-radius:12px;padding:8px 14px;min-width:110px}
+.stats b{font-size:22px}
+.best-row{font-size:18px;margin:6px 0 4px}.best-row b{color:#f5d27a;font-size:24px}
+.record{display:inline-block;background:linear-gradient(90deg,#ecc565,#fff2b8,#ecc565);color:#3a2205;padding:4px 18px;border-radius:30px;font-weight:600;margin-bottom:8px;animation:pulse .6s infinite alternate}
+.btn-row{display:flex;gap:12px;margin-top:10px}.btn-row .btn{margin-top:0}
+#loading{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#07040d;z-index:50;font-size:22px;color:#f5d27a}
+@media (max-width:820px){.preview-name{right:0;bottom:auto;top:16px}.preview-hint{display:none}#select{align-items:flex-end}.select-panel{height:56%;border-left:none;border-top:2px solid #c9a24a}}
+@media (max-width:700px){h1{font-size:28px}h1 span{font-size:15px}.hud-top{left:62px;right:8px;transform:none;top:8px;gap:6px}.mission .tgt{font-size:15px}.timer{font-size:22px;min-width:74px}.scorebox b{font-size:18px}.chip{padding:4px 9px}#minimap{width:120px;height:120px;top:74px;right:8px}.loc{top:198px;right:8px;width:120px;font-size:12px}.bag{font-size:12px;bottom:8px}.prompt{bottom:auto;top:40%;font-size:13px}.final-score{font-size:54px}.stats>div{min-width:80px;padding:6px 8px}.btn-row{flex-direction:column}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+</head>
+<body>
+<div id="loading">✦ กำลังสร้างอาณาจักรแฟนตาซี... ✦</div>
+<div id="game"></div>
+<button id="btnMute">🔊</button>
+
+<div id="home" class="screen">
+  <div class="panel" style="width:500px">
+    <div class="crest">✦ 🌐 ✦</div>
+    <h1>อาณาจักรแฟนตาซี<span>เลือกธีมผจญภัยของคุณ</span></h1>
+    <div class="theme-grid" id="themeGrid"></div>
+    <div class="best">🏆 สถิติสูงสุด (<span id="themeNameLabel">โรงเรียนเวทมนต์</span>): <b id="homeBest">—</b> คะแนน</div>
+    <button id="btnPlay" class="btn primary">✦ ถัดไป: เลือกตัวละคร</button>
+    <button id="btnHow" class="btn small">📜 วิธีเล่น</button>
+  </div>
+</div>
+
+<div id="how" class="screen hidden">
+  <div class="panel" style="width:540px">
+    <h2>📜 วิธีเล่นอาณาจักรแฟนตาซี</h2>
+    <ul class="how-list">
+      <li>แต่ละเกมมีเวลา <b>3 นาที</b> ระบบจะสุ่มวัตถุเป้าหมายตามธีม</li>
+      <li>เก็บ<b class="good">วัตถุเป้าหมาย</b> ได้ชิ้นละ <b class="good">+100</b> คะแนน</li>
+      <li>เก็บ<b class="bad">ของอย่างอื่น</b> โดนหักชิ้นละ <b class="bad">−100</b> คะแนน</li>
+      <li><b>ธีมมหาสมุทร:</b> ตัวละครจะสวมชุดดำน้ำและว่ายน้ำสำรวจโลกใต้ทะเลลึกเชื่อมด้วยร่องหิน</li>
+      <li>คอมพิวเตอร์: <b>WASD/ลูกศร</b> เดิน · <b>Shift</b> วิ่ง · <b>ลากเมาส์</b> หมุนกล้อง · <b>E/Space</b> เก็บของ · <b>M</b> แผนที่</li>
+      <li>มือถือ: จอยสติ๊กซ้ายล่างเดิน · ลากนิ้วหมุนกล้อง · ปุ่ม ✋ เก็บของ</li>
+    </ul>
+    <button id="btnHowClose" class="btn primary">เข้าใจแล้ว</button>
+  </div>
+</div>
+
+<div id="select" class="screen hidden">
+  <div class="select-panel">
+    <h2>🧙 เลือกนักเวท / นักสำรวจ</h2>
+    <div class="gender">
+      <button class="gbtn" data-g="m">♂ ชาย</button>
+      <button class="gbtn" data-g="f">♀ หญิง</button>
+    </div>
+    <div id="charGrid" class="char-grid"></div>
+    <button id="btnEnter" class="btn primary">✦ เริ่มลุยภารกิจ!</button>
+    <button id="btnBackHome" class="btn small">← เปลี่ยนธีม</button>
+  </div>
+  <div id="previewName" class="preview-name"></div>
+  <div class="preview-hint">ลากเพื่อหมุนดูตัวละคร</div>
+</div>
+
+<div id="hud" class="hidden">
+  <div class="hud-top">
+    <div class="chip mission"><div class="lbl">ภารกิจ: ตามหา</div><div class="tgt"><span id="targetEmoji"></span> <b id="targetName"></b></div></div>
+    <div class="chip timer" id="timer">3:00</div>
+    <div class="chip scorebox" id="scoreChip"><div class="lbl">คะแนน</div><b id="score">0</b></div>
+  </div>
+  <canvas id="minimap" width="248" height="248"></canvas>
+  <div class="chip loc">📍 <span id="locName">-</span><div class="mini-hint">แตะแผนที่ / กด M เพื่อขยาย</div></div>
+  <div class="chip bag">🎒 ในกระเป๋า <b id="bagCount">0</b> ชิ้น · <span class="good">✔ <span id="okCount">0</span></span> · <span class="bad">✘ <span id="badCount">0</span></span></div>
+  <div id="prompt" class="prompt hidden"></div>
+  <div class="help" id="help">WASD/ลูกศร เดิน · Shift วิ่ง · ลากเมาส์ หมุนกล้อง · E/Space เก็บของ · M แผนที่</div>
+  <div id="joy"><div id="joyKnob"></div></div>
+  <button id="btnGrab" class="grab">✋<span>เก็บ</span></button>
+  <div id="floatLayer"></div>
+</div>
+
+<div id="bigmap" class="screen hidden">
+  <canvas id="bigmapCanvas" width="620" height="620"></canvas>
+  <div>🗺️ แผนที่โซน — แตะหรือกด M เพื่อปิด</div>
+</div>
+
+<div id="intro" class="screen hidden">
+  <div class="panel" style="width:420px">
+    <div class="lbl" style="font-size:16px">ภารกิจของคุณคือ ตามหา</div>
+    <div id="introEmoji" class="intro-emoji"></div>
+    <h2 id="introName" style="font-size:30px"></h2>
+    <p>เก็บถูก <b class="good">+100</b> · เก็บผิด <b class="bad">−100</b></p>
+    <div id="introCount"></div>
+  </div>
+</div>
+
+<div id="end" class="screen hidden">
+  <div class="panel" style="width:520px">
+    <h2 style="font-size:30px">⌛ หมดเวลา!</h2>
+    <div id="newRecord" class="record hidden">🏆 สถิติใหม่!</div>
+    <div class="lbl" style="font-size:16px">คะแนนรวม</div>
+    <div id="finalScore" class="final-score">0</div>
+    <div class="stats">
+      <div>เป้าหมาย<br><b id="endTarget" style="font-size:16px"></b></div>
+      <div>เก็บถูก<br><b id="endOk" class="good">0</b></div>
+      <div>เก็บผิด<br><b id="endBad" class="bad">0</b></div>
+    </div>
+    <div class="best-row">🏆 สถิติสูงสุดธีมนี้: <b id="endBest">0</b> คะแนน</div>
+    <div class="lbl" id="endPlays"></div>
+    <div class="btn-row">
+      <button id="btnHome" class="btn">🏠 เปลี่ยนธีม / หน้าแรก</button>
+      <button id="btnNext" class="btn primary">▶ เริ่มเล่นเกมถัดไป</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ========== ตั้งค่าระบบ ========== */
+const GAME_TIME=180,PTS=100,CELL=4,WALL_H=6,MW=31,MH=31,PICK_R=2.2,CAM_MAX=9.5,N_TGT=22,N_DECOY=50;
+const PI=Math.PI,R=Math.random,$=id=>document.getElementById(id);
+const isTouch=matchMedia('(pointer:coarse)').matches;
+const store={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+
+const THEMES=[
+ {id:'magic',name:'โรงเรียนเวทมนต์',icon:'🏰',sky:0x0b0818,fog:10,wallCol:0x1e1a16,floorCol:0x141116},
+ {id:'snow',name:'เมืองหิมะ',icon:'❄️',sky:0x152238,fog:12,wallCol:0xd0e0f0,floorCol:0xeaf4fc},
+ {id:'maze',name:'สนามเขาวงกต',icon:'🗿',sky:0x2b2218,fog:10,wallCol:0x5a4a35,floorCol:0x3a2e20},
+ {id:'ocean',name:'มหาสมุทร',icon:'🌊',sky:0x02182b,fog:14,wallCol:0x0d3b66,floorCol:0x042940}
+];
+let curTheme=0,selChar=0,selGender='m';
+
+/* ========== ข้อมูลไอเทมแต่ละธีม ========== */
+const THEME_ITEMS={
+ magic:[
+  {id:'wand',name:'ไม้กายสิทธิ์',emoji:'🪄'},{id:'potion',name:'ขวดยาวิเศษ',emoji:'🧪'},{id:'book',name:'ตำราคาถา',emoji:'📕'},
+  {id:'crystal',name:'ลูกแก้วพยากรณ์',emoji:'🔮'},{id:'hat',name:'หมวกพ่อมด',emoji:'🎩'},{id:'key',name:'กุญแจมีปีก',emoji:'🗝️'},
+  {id:'hourglass',name:'นาฬิกาทรายย้อนเวลา',emoji:'⏳'},{id:'scroll',name:'ม้วนคัมภีร์โบราณ',emoji:'📜'},{id:'feather',name:'ขนนกฟีนิกซ์',emoji:'🪶'},{id:'broom',name:'ไม้กวาดวิเศษ',emoji:'🧹'}
+ ],
+ snow:[
+  {id:'snowflake',name:'เกล็ดหิมะแก้ว',emoji:'❄️'},{id:'icestone',name:'ผลึกน้ำแข็ง',emoji:'🧊'},{id:'carrot',name:'จมูกแครอท',emoji:'🥕'},
+  {id:'scarf',name:['ผ้าพันคอไหมพรม','ผ้าพันคอสีแดง'][0],emoji:'🧣'},{id:'bell',name:'กระดิ่งเงิน',emoji:'🔔'},{id:'mitten',name:'ถุงมือกันหนาว',emoji:'🧤'},
+  {id:'star',name:'ดาวหิมะ',emoji:'⭐'},{id:'pinecone',name:'ลูกสนเคลือบน้ำแข็ง',emoji:'🌲'},{id:'lantern',name:'ตะเกียงหิมะ',emoji:'🏮'},{id:'penguin',name:'ตุ๊กตาเพนกวิน',emoji:'🐧'}
+ ],
+ maze:[
+  {id:'flint',name:'หินชนวนจุดไฟ',emoji:'🪨'},{id:'bone',name:'กระดูกโบราณ',emoji:'🦴'},{id:'torch',name:'คบเพลิงหิน',emoji:'🔥'},
+  {id:'fern',name:'ใบไม้ดึกดำบรรพ์',emoji:'🌿'},{id:'amber',name:'อำพันโบราณ',emoji:'💎'},{id:'tooth',name:'เขี้ยวสัตว์ป่า',emoji:'🦷'},
+  {id:'shell',name:'หอยทากหิน',emoji:'🐚'},{id:'egg',name:'ไข่ไดโนเสาร์',emoji:'🥚'},{id:'club',name:'กระบองหิน',emoji:'🪵'},{id:'mask',name:'หน้ากากชนเผ่า',emoji:'🗿'}
+ ],
+ ocean:[
+  {id:'pearl',name:'ไข่มุกเรืองแสง',emoji:'⚪'},{id:'shell',name:'เปลือกหอยมุก',emoji:'🐚'},{id:'coral',name:'ปะการังสีรุ้ง',emoji:'🪸'},
+  {id:'trident',name:'สามง่ามโบราณ',emoji:'🔱'},{id:'starfish',name:'ปลาดาวคริสตัล',emoji:'⭐'},{id:'potion',name:'น้ำยาหายใจใต้น้ำ',emoji:'🧪'},
+  {id:'seahorse',name:'ม้าน้ำทองคำ',emoji:'🐎'},{id:'compass',name:'เข็มทิศสมบัติ',emoji:'🧭'},{id:'crown',name:'มงกุฎราชาเงือก',emoji:'👑'},{id:'bottle',name:'ขวดแก้วในตำนาน',emoji:'🍾'}
+ ]
+};
+
+const CHARACTERS=[
+ {name:'ชูก้าไกลเดอร์ สีเทาคลาสสิก',icon:'🐾',fur:0x8b8f98,belly:0xf3efe6,ears:'big',tail:'glider'},
+ {name:'แมวส้มลายสลิด',icon:'🐱',fur:0xe39a45,belly:0xfbe9d0,ears:'pointy',tail:'cat'},
+ {name:'แฮมสเตอร์ไซเรียน',icon:'🐹',fur:0xe0a85a,belly:0xfff4e0,ears:'small',tail:'none'},
+ {name:'กระรอกแดง',icon:'🐿️',fur:0xb5562a,belly:0xf6e3cc,ears:'tuft',tail:'bushy'},
+ {name:'กระต่ายขาวหูตั้ง',icon:'🐰',fur:0xf7f5f2,belly:0xffffff,ears:'long',tail:'puff'}
+];
+
+/* ========== จัดการหน้าจอ Home เมนูเลือกธีม ========== */
+function renderThemeGrid(){
+ const grid=$('themeGrid');grid.innerHTML='';
+ THEMES.forEach((t,i)=>{
+  const d=document.createElement('div');d.className=`theme-card ${i===curTheme?'sel':''}`;
+  d.innerHTML=`<div class="ti">${t.icon}</div><div class="tn">${t.name}</div>`;
+  d.onclick=()=>{curTheme=i;sfxClick();renderThemeGrid();updateHomeBest();};
+  grid.appendChild(d);});
+}
+function updateHomeBest(){
+ const t=THEMES[curTheme];$('themeNameLabel').textContent=t.name;
+ const b=store.get('kingdom_best_'+t.id,null);$('homeBest').textContent=b===null?'—':b;
+}
+renderThemeGrid();updateHomeBest();
+
+$('btnPlay').onclick=()=>{sfxClick();show('select');refreshSelect();};
+$('btnHow').onclick=()=>{sfxClick();show('how');};
+$('btnHowClose').onclick=()=>{sfxClick();show('home');};
+$('btnBackHome').onclick=()=>{sfxClick();goHome();};
+$('btnEnter').onclick=()=>{initAudio();sfxClick();startGame();};
+$('btnHome').onclick=()=>{sfxClick();goHome();};
+$('btnNext').onclick=()=>{sfxClick();show('select');refreshSelect();};
+
+const SCREENS=['home','how','select','intro','end','bigmap'];
+const show=id=>SCREENS.forEach(s=>$(s).classList.toggle('hidden',s!==id));
+let state='home',mapOpen=false;
+
+/* ========== สร้างแผนผังโลก / ธีมโซน ========== */
+const MW=31,MH=31;
+const grid=Array.from({length:MH},()=>Array(MW).fill(1));
+const roomAt=Array.from({length:MH},()=>Array(MW).fill(-1));
+const busy=Array.from({length:MH},()=>Array(MW).fill(false));
+const isWall=(x,y)=>x<0||y<0||x>=MW||y>=MH||grid[y][x]===1;
+{const st=[[1,1]];grid[1][1]=0;
+ while(st.length){const [x,y]=st[st.length-1];
+  const opts=[[2,0],[-2,0],[0,2],[0,-2]].filter(([dx,dy])=>{const nx=x+dx,ny=y+dy;return nx>0&&ny>0&&nx<MW-1&&ny<MH-1&&grid[ny][nx]===1;});
+  if(!opts.length){st.pop();continue;}
+  const [dx,dy]=opts[Math.floor(R()*opts.length)];grid[y+dy/2][x+dx/2]=0;grid[y+dy][x+dx]=0;st.push([x+dx,y+dy]);}}
+const rooms=[];
+function addRoom(x,y,w,h,name){for(let j=y;j<y+h;j++)for(let i=x;i<x+w;i++){grid[j][i]=0;roomAt[j][i]=rooms.length;}rooms.push({x,y,w,h,name});}
+addRoom(11,13,9,7,'ลานกลางอาณาจักร');
+{const names=['โถงคริสตัล','ห้องโบราณ','หอคอยลับ','ห้องสมบัติ','โซนวิเศษ','ห้องลับใต้ดิน','ลานหินผา','ถ้ำมรกต'];let di=0;
+ for(let tries=0;tries<600&&di<names.length;tries++){
+  const w=pick([5,7],R),h=pick([5,7],R);
+  const x=1+2*Math.floor(R()*((MW-1-w)/2)),y=1+2*Math.floor(R()*((MH-1-h)/2));
+  if(rooms.some(r=>x<r.x+r.w+2&&x+w+2>r.x&&y<r.y+r.h+2&&y+h+2>r.y))continue;
+  addRoom(x,y,w,h,names[di]);di++;
+ }}
+
+/* ========== 3D Engine Setup ========== */
+const renderer=new THREE.WebGLRenderer({antialias:!isTouch,powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,isTouch?1.5:2));renderer.setSize(innerWidth,innerHeight);
+renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.2;
+$('game').appendChild(renderer.domElement);
+const scene=new THREE.Scene();
+const camera=new THREE.PerspectiveCamera(65,innerWidth/innerHeight,.1,600);
+const player={x:CELL*15.5,z:CELL*19.5,heading:PI,r:.45,model:null};
+
+/* ========== ตัวละครและชุดแต่งกายตามธีม ========== */
+function buildCharacter(def,gender,themeId){
+ const isF=gender==='f',root=new THREE.Group(),body=new THREE.Group();root.add(body);
+ const fur=new THREE.MeshStandardMaterial({color:def.fur,roughness:0.95});
+ const belly=new THREE.MeshStandardMaterial({color:def.belly,roughness:0.95});
+ 
+ let outfitMat, trimMat, headWear;
+ if(themeId==='magic'){
+  outfitMat=new THREE.MeshStandardMaterial({color:isF?0x6b1d82:0x1b2d63,roughness:0.9});
+  trimMat=new THREE.MeshStandardMaterial({color:isF?0xffb8e0:0xf3c855,metalness:0.6,roughness:0.3});
+  headWear='wizard';
+ }else if(themeId==='snow'){
+  outfitMat=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.4}); // ชุดมนุษย์หิมะ
+  trimMat=new THREE.MeshStandardMaterial({color:0xdc2626,roughness:0.8}); // ผ้าพันคอแดง
+  headWear='snow';
+ }else if(themeId==='maze'){
+  outfitMat=new THREE.MeshStandardMaterial({color:0x8c7853,roughness:1.0}); // ชุดมนุษย์หินยุคหิน ฟลินท์สโตน
+  trimMat=new THREE.MeshStandardMaterial({color:0x3a2e20,roughness:0.9});
+  headWear='maze';
+ }else{
+  outfitMat=new THREE.MeshStandardMaterial({color:0x0284c7,roughness:0.3,metalness:0.4}); // ชุดดำน้ำ
+  trimMat=new THREE.MeshStandardMaterial({color:0xfacc15,roughness:0.2,metalness:0.8}); // ถังออกซิเจน/หน้ากาก
+  headWear='ocean';
+ }
+
+ // ลำตัว
+ P(body,new THREE.CylinderGeometry(.22,headWear==='ocean'?.35:.48,.9,32),outfitMat,0,.45,0);
+ 
+ if(headWear==='magic'){
+  P(body,new THREE.TorusGeometry(.47,.03,8,32),trim,0,.04,0,PI/2);
+  P(body,new THREE.TorusGeometry(.21,.04,8,24),trim,0,.88,0,PI/2);
+ }else if(headWear==='snow'){
+  // กระดุมถ่านหินชุดมนุษย์หิมะ
+  [0.3, 0.5, 0.7].forEach(y=>P(body,new THREE.SphereGeometry(.035,8,8),new THREE.MeshStandardMaterial({color:0x111},0,y,.25)));
+ }else if(headWear==='maze'){
+  // ลายหนังสัตว์ยุคหิน
+  P(body,new THREE.TorusGeometry(.48,.04,8,32),trim,0,.45,0,PI/2);
+ }else{
+  // ถังออกซิเจนหลังชุดดำน้ำ
+  P(body,new THREE.CylinderGeometry(.12,.12,.6,12),trim,0,.5,-.25);
+ }
+
+ // แขนขา
+ for(const s of[-1,1])P(body,new THREE.SphereGeometry(.12,12,10),fur,s*.18,0.05,.35).scale.set(1,.7,1.3);
+ const arms=[];
+ for(const s of[-1,1]){const a=new THREE.Group();a.position.set(s*.26,.8,0);body.add(a);
+  P(a,new THREE.CylinderGeometry(.08,.12,.4,12),outfitMat,0,-.2,0);
+  P(a,new THREE.SphereGeometry(.075,10,8),fur,0,-.42,0);arms.push(a);}
+
+ // หัวและหน้าตา
+ const head=new THREE.Group();head.position.y=1.28;body.add(head);
+ P(head,new THREE.SphereGeometry(.38,28,20),fur);
+ P(head,new THREE.SphereGeometry(.25,20,16),belly,0,-.08,.16).scale.set(1.2,.85,.85);
+ 
+ // ดวงตา
+ for(const s of[-1,1]){
+  P(head,new THREE.SphereGeometry(.065,12,10),new THREE.MeshStandardMaterial({color:0x111,roughness:.1}),s*.16,.05,.32);
+  P(head,new THREE.SphereGeometry(.025,8,8),new THREE.MeshBasicMaterial({color:0xffffff}),s*.16+.02,.07,.36);
+ }
+
+ // หมวก / เครื่องแต่งหัวตามธีม
+ if(headWear==='magic'){
+  const hat=new THREE.Group();hat.position.set(0,.32,-.02);hat.rotation.x=-.1;head.add(hat);
+  P(hat,new THREE.CylinderGeometry(.45,.45,.03,24),outfitMat);
+  P(hat,new THREE.ConeGeometry(.25,.65,24),outfitMat,0,.35,0);
+  P(hat,new THREE.TorusGeometry(.24,.025,8,20),trim,0,.04,0,PI/2);
+ }else if(headWear==='snow'){
+  // หมวกไหมพรม
+  const hat=new THREE.Group();hat.position.set(0,.3,.0);head.add(hat);
+  P(hat,new THREE.SphereGeometry(.39,20,14,0,PI*2,0,PI*.6),trim,0,.05,0);
+  P(hat,new THREE.SphereGeometry(.08,12,12),new THREE.MeshStandardMaterial({color:0xffffff}),0,.42,0);
+ }else if(headWear==='maze'){
+  // กระดูกประดับผมยุคหิน
+  const bone=new THREE.Group();bone.position.set(.2,.3,0);bone.rotation.z=.5;head.add(bone);
+  P(bone,new THREE.CylinderGeometry(.03,.03,.4,8),new THREE.MeshStandardMaterial({color:0xfff5e1}),0,0,0,0,0,PI/2);
+  P(bone,new THREE.SphereGeometry(.05,8,8),new THREE.MeshStandardMaterial({color:0xfff5e1}),-.2,0,0);
+  P(bone,new THREE.SphereGeometry(.05,8,8),new THREE.MeshStandardMaterial({color:0xfff5e1}),.2,0,0);
+ }else{
+  // หน้ากากดำน้ำ
+  P(head,new THREE.BoxGeometry(.32,.22,.2),trim,0,.05,.26);
+  P(head,new THREE.BoxGeometry(.26,.16,.18),new THREE.MeshStandardMaterial({color:0x38bdf8,transparent:true,opacity:.6,roughness:.1}),0,.05,.28);
+ }
+
+ root.userData={body,head,armL:arms[0],armR:arms[1],t:0,w:0};
+ return root;
+}
+function animateCharacter(m,dt,moving){
+ const u=m.userData;u.t+=dt;const t=u.t;
+ if(moving){
+  u.w+=dt*12;const w=u.w;
+  u.body.position.y=Math.abs(Math.sin(w))*.12;
+  u.body.rotation.z=Math.sin(w)*.08;
+  u.armL.rotation.x=Math.sin(w)*.7;
+  u.armR.rotation.x=-Math.sin(w)*.7;
+ }else{
+  u.body.position.y=Math.sin(t*3)*.025;
+  u.body.rotation.z=0;
+  u.armL.rotation.x=Math.sin(t*2)*.1;
+  u.armR.rotation.x=-Math.sin(t*2)*.1;
+ }
+}
+
+/* ========== Audio Engine (เสียงดนตรีและเอฟเฟกต์ตามธีม) ========== */
+let actx=null,master,musicGain,sfxGain,noiseBuf,muted=store.get('kingdom_mute',false),loopStart=0,evIdx=0;
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+
+// เพลงประกอบ 4 ธีม (0:เวทมนต์, 1:หิมะ, 2:เขาวงกต, 3:มหาสมุทร)
+const THEME_MELODIES=[
+ [[71,1],[76,1.5],[79,.5],[78,1],[76,2],[72,1],[69,1],[72,1.5],[71,.5],[69,2]], // เวทมนต์: วอลซ์นุ่มนวล
+ [[60,1],[63,1],[67,2],[63,1],[60,1],[62,2],[60,1],[58,1],[60,3]], // หิมะ: ลมหนาววังเวง
+ [[48,1],[51,1],[53,2],[51,1],[48,1],[46,2],[48,3]], // เขาวงกต: ลึกลับตื่นเต้นยุคหิน
+ [[55,1],[58,1],[62,2],[65,2],[62,1],[58,1],[55,3]] // มหาสมุทร: ใต้ทะเลลึกน่าค้นหา
+];
+let activeMelody=THEME_MELODIES[0];
+const BEAT=.48,LOOP_BEATS=32;
+const events=[];
+function buildMusicEvents(){
+ events.length=0;let b=0;
+ const mel=activeMelody;
+ for(let i=0;i<30;i++){const item=mel[i%mel.length];events.push({beat:b,type:'mel',m:item[0],d:item[1]});b+=item[1];}
+ events.sort((a,b)=>a.beat-b.beat);
+}
+buildMusicEvents();
+
+function impulse(sec,decay){const len=actx.sampleRate*sec|0,buf=actx.createBuffer(2,len,actx.sampleRate);for(let c=0;c<2;c++){const d=buf.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,decay);}return buf;}
+function initAudio(){
+ if(actx){if(actx.state==='suspended')actx.resume();return;}
+ const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return;actx=new AC();
+ master=actx.createGain();master.gain.value=muted?0:.9;master.connect(actx.destination);
+ const comp=actx.createDynamicsCompressor();comp.connect(master);
+ const rev=actx.createConvolver();rev.buffer=impulse(2.5,2.2);const wet=actx.createGain();wet.gain.value=.35;rev.connect(wet);wet.connect(comp);
+ musicGain=actx.createGain();musicGain.gain.value=.4;musicGain.connect(comp);musicGain.connect(rev);
+ sfxGain=actx.createGain();sfxGain.gain.value=.9;sfxGain.connect(comp);sfxGain.connect(rev);
+ noiseBuf=actx.createBuffer(1,actx.sampleRate,actx.sampleRate);const d=noiseBuf.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;
+ loopStart=actx.currentTime+.3;evIdx=0;}
+function tone(f,t,dur,type,vol,dest,att=.01){if(!actx)return;const o=actx.createOscillator(),g=actx.createGain();o.type=type;o.frequency.setValueAtTime(f,t);
+ g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+att);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(dest);o.start(t);o.stop(t+dur+.05);}
+function bell(f,t,dur,vol,dest){tone(f,t,dur,'sine',vol,dest,.005);tone(f*2,t,dur*.5,'sine',vol*.35,dest,.005);}
+function playEv(ev,t){if(!actx)return;bell(mtof(ev.m),t,Math.max(.5,ev.d*BEAT*1.5),.18,musicGain);}
+function scheduleMusic(){if(!actx||actx.state!=='running')return;const now=actx.currentTime,LEN=LOOP_BEATS*BEAT;
+ if(loopStart+LEN<now){loopStart=now+.1;evIdx=0;}
+ for(let guard=0;guard<100;guard++){const ev=events[evIdx];if(!ev)break;const t=loopStart+ev.beat*BEAT;if(t>now+.5)break;if(t>=now-.05)playEv(ev,t);evIdx++;if(evIdx>=events.length){evIdx=0;loopStart+=LEN;}}}
+const sfx=fn=>{if(actx&&actx.state==='running')fn(actx.currentTime+.01);};
+const sfxGood=()=>sfx(t=>{[72,76,79,84].forEach((m,i)=>bell(mtof(m),t+i*.05,.6,.2,sfxGain));});
+const sfxBad=()=>sfx(t=>tone(150,t,.3,'sawtooth',.2,sfxGain,.01));
+const sfxTick=()=>sfx(t=>tone(1200,t,.06,'square',.05,sfxGain,.002));
+const sfxEnd=()=>sfx(t=>[76,72,64].forEach((m,i)=>bell(mtof(m),t+i*.15,1,.2,sfxGain)));
+const sfxClick=()=>sfx(t=>bell(mtof(88),t,.2,.1,sfxGain));
+
+$('btnMute').onclick=e=>{e.stopPropagation();initAudio();muted=!muted;store.set('kingdom_mute',muted);$('btnMute').textContent=muted?'🔇':'🔊';if(master)master.gain.setTargetAtTime(muted?0:.9,actx.currentTime,.05);};
+$('btnMute').textContent=muted?'🔇':'🔊';
+['pointerdown','keydown','touchstart'].forEach(ev=>addEventListener(ev,()=>{initAudio();},{once:true}));
+
+/* ========== สร้างโลกและวัตถุตามธีม ========== */
+const world=new THREE.Group();scene.add(world);
+const blocks=[],items=[],itemCells=new Set(),flying=[],decorGroup=new THREE.Group();scene.add(decorGroup);
+
+function buildWorldTheme(themeId){
+ world.clear();blocks.length=0;decorGroup.clear();clearItems();
+ const t=THEMES.find(th=>th.id===themeId);
+ scene.background.setHex(t.sky);scene.fog.color.setHex(t.sky);scene.fog.near=t.fog;scene.fog.far=t.fog+34;
+
+ // พื้น
+ const floorMat=new THREE.MeshStandardMaterial({color:t.floorCol,roughness:0.85});
+ const floor=new THREE.Mesh(new THREE.PlaneGeometry(MW*CELL,MH*CELL),floorMat);
+ floor.rotation.x=-PI/2;floor.position.set(MW*CELL/2,0,MH*CELL/2);world.add(floor);
+
+ // กำแพง
+ const wallGeo=new THREE.BoxGeometry(CELL,WALL_H,CELL);
+ const wallMat=new THREE.MeshStandardMaterial({color:t.wallCol,roughness:0.9});
+ const cells=[];
+ for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){if(grid[y][x]===1)cells.push([x,y]);}
+ const wm=new THREE.InstancedMesh(wallGeo,wallMat,cells.length);
+ const m4=new THREE.Matrix4();
+ cells.forEach(([x,y],i)=>{m4.makeTranslation(cw(x),WALL_H/2,cw(y));wm.setMatrixAt(i,m4);});
+ wm.frustumCulled=false;world.add(wm);
+
+ // ตกแต่งตามธีม
+ rooms.forEach(r=>{
+  const cx=cw(r.x+Math.floor(r.w/2)), cz=cw(r.y+Math.floor(r.h/2));
+  if(themeId==='snow'){
+   // ตุ๊กตาหิมะ / ต้นสน
+   const tree=new THREE.Group();
+   P(tree,new THREE.ConeGeometry(1,2.5,8),new THREE.MeshStandardMaterial({color:0x1b4332}),0,1.25,0);
+   P(tree,new THREE.ConeGeometry(0.8,2,8),new THREE.MeshStandardMaterial({color:0x2d6a4f}),0,2.2,0);
+   tree.position.set(cx,0,cz);decorGroup.add(tree);
+  }else if(themeId==='maze'){
+   // เสาหินโบราณ
+   const pillar=new THREE.Mesh(new THREE.CylinderGeometry(.6,.7,4,8),new THREE.MeshStandardMaterial({color:0x4a3f35,roughness:1}));
+   pillar.position.set(cx,2,cz);decorGroup.add(pillar);
+  }else if(themeId==='ocean'){
+   // ร่องหินมหึมา & ปะการัง
+   const rock=new THREE.Mesh(new THREE.DodecahedronGeometry(1.8,1),new THREE.MeshStandardMaterial({color:0x0f4c81,roughness:0.8}));
+   rock.position.set(cx,1,cz);decorGroup.add(rock);
+  }else{
+   // โรงเรียนเวทมนต์: เสาคาถาประดับไฟ
+   const col=new THREE.Mesh(new THREE.CylinderGeometry(.4,.4,WALL_H,12),mat=>new THREE.MeshStandardMaterial({color:0x3a3042}));
+   col.position.set(cx,WALL_H/2,cz);decorGroup.add(col);
+  }
+ });
+}
+
+/* ========== หน้าจอเลือกตัวละคร ========== */
+function refreshSelect(){
+ const grid=$('charGrid');grid.innerHTML='';
+ CHARACTERS.forEach((c,i)=>{
+  const d=document.createElement('div');d.className=`char-card ${i===selChar?'sel':''}`;
+  d.innerHTML=`<span class="sw" style="background:#${c.fur.toString(16).padStart(6,'0')}"></span><span>${c.icon} ${c.name}</span>`;
+  d.onclick=()=>{selChar=i;sfxClick();refreshSelect();};
+  grid.appendChild(d);
+ });
+ document.querySelectorAll('.gbtn').forEach(b=>b.classList.toggle('sel',b.dataset.g===selGender));
+ const th=THEMES[curTheme];
+ $('previewName').textContent=CHARACTERS[selChar].name+' · '+th.name;
+ store.set('kingdom_sel',{c:selChar,g:selGender,t:curTheme});
+}
+document.querySelectorAll('.gbtn').forEach(b=>b.onclick=()=>{selGender=b.dataset.g;sfxClick();refreshSelect();});
+
+function goHome(){state='home';show('home');$('hud').classList.add('hidden');renderThemeGrid();updateHomeBest();}
+function goSelect(){state='select';show('select');$('hud').classList.add('hidden');activeMelody=THEME_MELODIES[curTheme];buildMusicEvents();refreshSelect();}
+
+/* ========== เริ่มเกม ========== */
+let score=0,okN=0,badN=0,timeLeft=GAME_TIME,target=null,lastSec=-1;
+let camYaw=0,camPitch=.38,camDist=7.5,camCur=7.5,camDistT=7.5;
+
+function startGame(){
+ const th=THEMES[curTheme];
+ target=pick(THEME_ITEMS[th.id]);score=okN=badN=0;timeLeft=GAME_TIME;lastSec=-1;
+ buildWorldTheme(th.id);
+ if(player.model){scene.remove(player.model);disposeObj(player.model);}
+ player.model=buildCharacter(CHARACTERS[selChar],selGender,th.id);scene.add(player.model);
+ player.x=cw(15);player.z=cw(19);player.heading=PI;camYaw=0;camPitch=.38;camDistT=7.5;
+ 
+ clearItems();
+ for(let i=0;i<N_TGT;i++)spawnItem(target,6);
+ const others=THEME_ITEMS[th.id].filter(i=>i.id!==target.id);
+ for(let i=0;i<N_DECOY;i++)spawnItem(others[i%others.length],4);
+
+ $('targetEmoji').textContent=$('introEmoji').textContent=target.emoji;
+ $('targetName').textContent=$('introName').textContent=target.name;
+ updateHud();$('timer').textContent='3:00';$('timer').className='chip timer';
+ state='intro';show('intro');$('hud').classList.add('hidden');$('introCount').textContent='';
+ 
+ let n=3;const step=()=>{if(state!=='intro')return;
+  if(n>0){$('introCount').textContent=n;sfxCount(false);n--;setTimeout(step,900);}
+  else{$('introCount').textContent='เริ่ม!';sfxCount(true);setTimeout(()=>{if(state!=='intro')return;state='play';show(null);$('hud').classList.remove('hidden');},600);}};
+ setTimeout(step,700);
+}
+
+function endGame(){
+ state='end';mapOpen=false;keys.clear();sfxEnd();
+ const th=THEMES[curTheme];
+ const prev=store.get('kingdom_best_'+th.id,null),isNew=prev===null||score>prev,best=isNew?score:prev;
+ store.set('kingdom_best_'+th.id,best);
+ const plays=store.get('kingdom_plays_'+th.id,0)+1;store.set('kingdom_plays_'+th.id,plays);
+ $('finalScore').textContent=score;$('endTarget').textContent=target.emoji+' '+target.name;
+ $('endOk').textContent=okN;$('endBad').textContent=badN;$('endBest').textContent=best;
+ $('newRecord').classList.toggle('hidden',!isNew);
+ $('endPlays').textContent='เล่นธีมนี้มาแล้ว '+plays+' ครั้ง';
+ $('prompt').classList.add('hidden');$('hud').classList.add('hidden');show('end');
+}
+
+function updateHud(){$('score').textContent=score;$('bagCount').textContent=okN+badN;$('okCount').textContent=okN;$('badCount').textContent=badN;}
+function floatText(txt,cls){const d=document.createElement('div');d.className='float '+cls;d.textContent=txt;$('floatLayer').appendChild(d);setTimeout(()=>d.remove(),1300);}
+function nearestItem(){let best=null,bd=PICK_R;for(const it of items){const d=Math.hypot(it.x-player.x,it.z-player.z);if(d<bd){bd=d;best=it;}}return best;}
+function tryPick(){
+ if(state!=='play')return;const it=nearestItem();if(!it)return;
+ items.splice(items.indexOf(it),1);itemCells.delete(it.key);
+ flying.push({h:it.holder,t:0,sx:it.holder.position.x,sz:it.holder.position.z});
+ const th=THEMES[curTheme];
+ if(it.type.id===target.id){score+=PTS;okN++;sfxGood();floatText('+100 '+it.type.emoji,'good');}
+ else{score-=PTS;badN++;sfxBad();floatText('−100 '+it.type.emoji+' ไม่ใช่เป้าหมาย!','bad');}
+ updateHud();
+ const c=$('scoreChip');c.classList.remove('bump');void c.offsetWidth;c.classList.add('bump');
+ spawnItem(it.type,10);
+}
+
+function clearItems(){items.length=0;itemCells.clear();flying.length=0;itemsGroup.children.slice().forEach(c=>{itemsGroup.remove(c);disposeObj(c);});}
+const itemsGroup=new THREE.Group();scene.add(itemsGroup);
+function buildItem(id){
+ const g=new THREE.Group();
+ P(g,new THREE.SphereGeometry(.28,16,16),new THREE.MeshStandardMaterial({color:0xffd700,metalness:0.8,roughness:0.2,emissive:0x554400}));
+ return g;
+}
+function randomCell(minDist){for(let t=0;t<900;t++){const x=1+Math.floor(R()*(MW-2)),y=1+Math.floor(R()*(MH-2));if(grid[y][x]!==0||busy[y][x])continue;
+ const k=x+','+y;if(itemCells.has(k))continue;if(Math.hypot(cw(x)-player.x,cw(y)-player.z)<minDist)continue;return [x,y,k];}return null;}
+function spawnItem(type,minDist=6){const c=randomCell(minDist);if(!c)return;const [x,y,k]=c;
+ const holder=new THREE.Group(),mesh=buildItem(type.id);mesh.rotation.y=R()*PI*2;holder.add(mesh);
+ const wx=cw(x)+(R()-.5)*1.6,wz=cw(y)+(R()-.5)*1.6;holder.position.set(wx,1,wz);
+ itemsGroup.add(holder);items.push({type,holder,mesh,x:wx,z:wz,key:k,ph:R()*10});itemCells.add(k);}
+
+/* ========== ควบคุมและการเดิน ========== */
+const keys=new Set();
+addEventListener('keydown',e=>{if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();keys.add(e.code);
+ if(state==='play'&&!e.repeat){if(e.code==='KeyE'||e.code==='Space')tryPick();if(e.code==='KeyM')toggleMap();}});
+addEventListener('keyup',e=>keys.delete(e.code));
+const cvs=renderer.domElement;let drag=null;
+cvs.addEventListener('pointerdown',e=>{if(drag)return;drag={id:e.pointerId,x:e.clientX,y:e.clientY};cvs.setPointerCapture(e.pointerId);});
+cvs.addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;
+ camYaw-=dx*.006;camPitch=Math.max(.05,Math.min(.8,camPitch+dy*.004));});
+const endDrag=e=>{if(drag&&e.pointerId===drag.id)drag=null;};cvs.addEventListener('pointerup',endDrag);cvs.addEventListener('pointercancel',endDrag);
+
+const joy={x:0,y:0,id:null},joyEl=$('joy'),knob=$('joyKnob');
+function moveJoy(e){const r=joyEl.getBoundingClientRect();let dx=e.clientX-(r.left+r.width/2),dy=e.clientY-(r.top+r.height/2);const max=r.width/2-10,l=Math.hypot(dx,dy);if(l>max){dx*=max/l;dy*=max/l;}joy.x=dx/max;joy.y=dy/max;knob.style.transform=`translate(${dx}px,${dy}px)`;}
+joyEl.addEventListener('pointerdown',e=>{e.stopPropagation();joy.id=e.pointerId;joyEl.setPointerCapture(e.pointerId);moveJoy(e);});
+joyEl.addEventListener('pointermove',e=>{if(e.pointerId===joy.id)moveJoy(e);});
+const relJoy=e=>{if(e.pointerId!==joy.id)return;joy.id=null;joy.x=joy.y=0;knob.style.transform='';};
+joyEl.addEventListener('pointerup',relJoy);joyEl.addEventListener('pointercancel',relJoy);
+$('btnGrab').addEventListener('pointerdown',e=>{e.stopPropagation();e.preventDefault();tryPick();});
+function toggleMap(){if(state!=='play')return;mapOpen=!mapOpen;$('bigmap').classList.toggle('hidden',!mapOpen);}
+if(isTouch)$('help').classList.add('hidden');else{joyEl.classList.add('hidden');$('btnGrab').classList.add('hidden');}
+
+/* ========== แผนที่ย่อ / ใหญ่ ========== */
+const MS=8,baseMap=document.createElement('canvas');baseMap.width=MW*MS;baseMap.height=MH*MS;
+{const g=baseMap.getContext('2d');g.fillStyle='#120b1c';g.fillRect(0,0,baseMap.width,baseMap.height);
+ for(let y=0;y<MH;y++)for(let x=0;x<MW;x++){if(grid[y][x]===1)continue;g.fillStyle='#5a4e44';g.fillRect(x*MS,y*MS,MS,MS);}}
+const miniCtx=$('minimap').getContext('2d'),bigCtx=$('bigmapCanvas').getContext('2d');
+function drawMap(ctx,size){ctx.clearRect(0,0,size,size);ctx.drawImage(baseMap,0,0,size,size);const s=size/(MW*CELL);
+ const px=player.x*s,pz=player.z*s,dx=Math.sin(player.heading),dz=Math.cos(player.heading),L=size/24;
+ ctx.strokeStyle='rgba(255,224,102,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(px,pz,L,0,PI*2);ctx.stroke();
+ ctx.fillStyle='#ffe066';ctx.beginPath();ctx.moveTo(px+dx*L,pz+dz*L);ctx.lineTo(px-dx*L*.6-dz*L*.6,pz-dz*L*.6+dx*L*.6);ctx.lineTo(px-dx*L*.6+dz*L*.6,pz-dz*L*.6-dx*L*.6);ctx.closePath();ctx.fill();}
+
+/* ========== ลูปเกมทุกเฟรม ========== */
+function updatePlayer(dt){
+ let f=0,r=0;
+ if(state==='play'){
+  if(keys.has('KeyW')||keys.has('ArrowUp'))f+=1;if(keys.has('KeyS')||keys.has('ArrowDown'))f-=1;
+  if(keys.has('KeyD')||keys.has('ArrowRight'))r+=1;if(keys.has('KeyA')||keys.has('ArrowLeft'))r-=1;
+  if(joy.id!==null){f-=joy.y;r+=joy.x;}
+ }
+ let mx=-Math.sin(camYaw)*f+Math.cos(camYaw)*r,mz=-Math.cos(camYaw)*f-Math.sin(camYaw)*r;
+ const l=Math.hypot(mx,mz),moving=l>.1;
+ if(moving){
+  const sp=(keys.has('ShiftLeft')||(joy.id!==null&&Math.hypot(joy.x,joy.y)>.92)?9:5.5)*Math.min(1,l);
+  mx/=l;mz/=l;const nx=player.x+mx*sp*dt,nz=player.z+mz*sp*dt;
+  if(!isWall(Math.floor((nx+player.r)/CELL),Math.floor(player.z/CELL))&&!isWall(Math.floor((nx-player.r)/CELL),Math.floor(player.z/CELL)))player.x=nx;
+  if(!isWall(Math.floor(player.x/CELL),Math.floor((nz+player.r)/CELL))&&!isWall(Math.floor(player.x/CELL),Math.floor((nz-player.r)/CELL)))player.z=nz;
+  player.heading=lerpAngle(player.heading,Math.atan2(mx,mz),Math.min(1,dt*12));
+ }
+ const m=player.model;
+ if(m){
+  m.position.set(player.x,0,player.z);
+  m.rotation.y=player.heading;
+  animateCharacter(m,dt,moving);
+ }
+}
+
+function updateCamera(dt){
+ camCur+=(camDistT-camCur)*Math.min(1,dt*8);
+ const tx=player.x,ty=1.6,tz=player.z,dx=Math.sin(camYaw)*Math.cos(camPitch),dy=Math.sin(camPitch),dz=Math.cos(camYaw)*Math.cos(camPitch);
+ camera.position.set(tx+dx*camCur,ty+dy*camCur,tz+dz*camCur);camera.lookAt(tx,1.3,tz);
+}
+
+const clock=new THREE.Clock();let elapsed=0;
+function loop(){
+ requestAnimationFrame(loop);const dt=Math.min(.1,clock.getDelta());elapsed+=dt;const t=elapsed;
+ scheduleMusic();
+ if(state==='home'){camera.position.set(15*CELL+Math.cos(t*.2)*40,25,15*CELL+Math.sin(t*.2)*40);camera.lookAt(15*CELL,0,15*CELL);renderer.render(scene,camera);return;}
+ if(state==='select'){renderer.render(scene,camera);return;}
+
+ updatePlayer(dt);updateCamera(dt);
+ if(state==='play'){
+  timeLeft-=dt;
+  if(timeLeft<=0){timeLeft=0;endGame();}else{
+   const s=Math.ceil(timeLeft);if(s!==lastSec){lastSec=s;$('timer').textContent=Math.floor(s/60)+':'+String(s%60).padStart(2,'0');if(s<=10)sfxTick();}
+   const it=nearestItem();const txt=it?(isTouch?'แตะ ✋ เพื่อเก็บ ':'กด E เพื่อเก็บ ')+it.type.emoji+' '+it.type.name:'';
+   $('prompt').textContent=txt;$('prompt').classList.toggle('hidden',!txt);
+   drawMap(miniCtx,248);if(mapOpen)drawMap(bigCtx,620);
+  }
+ }
+ renderer.render(scene,camera);
+}
+
+buildWorldTheme('magic');
+goHome();loop();
+</script>
+</body>
+</html>
