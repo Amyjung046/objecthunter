@@ -85,6 +85,7 @@ h1{font-size:clamp(32px,6vw,64px);line-height:1.15;text-align:center;text-shadow
 </head>
 <body>
 <canvas id="game"></canvas>
+
 <div id="splash" class="screen active bgfun">
   <div class="bounce" style="font-size:80px">🐿️🐱🐹🐰🐒</div>
   <h1>Treasure Hunt 3D</h1>
@@ -97,7 +98,7 @@ h1{font-size:clamp(32px,6vw,64px);line-height:1.15;text-align:center;text-shadow
   <div class="sub">เลือกโลกที่อยากผจญภัย แล้วตามหาของเป้าหมายให้ได้มากที่สุดใน 3 นาที!</div>
   <div id="allBest"></div>
   <div class="themes" id="themeList"></div>
-  <div class="howto">🎯 เก็บของเป้าหมาย <b>+100</b> · เก็บผิด <b>−100</b> &nbsp;|&nbsp; ⌨️ W/S เดิน · A/D หมุน · Shift วิ่ง · E/Space เก็บ · M แผนที่ · ลากเมาส์หมุนกล้อง</div>
+  <div class="howto">🎯 เก็บของเป้าหมาย <b>+100</b> · เก็บผิด <b>−100</b> &nbsp;|&nbsp; ⌨️ W เดินหน้า · S ถอยหลัง · A/D ซ้าย/ขวา · Shift วิ่ง · E/Space เก็บ · M แผนที่ · หมุนเมาส์/ล้อหมุนซูมเข้า-ออก</div>
 </div>
 
 <div id="charSelect" class="screen bgfun">
@@ -133,7 +134,7 @@ h1{font-size:clamp(32px,6vw,64px);line-height:1.15;text-align:center;text-shadow
   <div id="zoneName" class="panel"></div>
   <div id="prompt" class="panel"></div>
   <div id="intro" class="panel"></div>
-  <div id="help" class="panel">W/S เดิน · A/D หมุน · Shift วิ่ง · E/Space เก็บ · M แผนที่</div>
+  <div id="help" class="panel">W/S/A/D เดินตามมุมกล้อง · Shift วิ่ง · E/Space เก็บ · M แผนที่ · Scroll เมาส์ซูมเข้า/ออก</div>
   <div id="touch">
     <div id="joy"><div id="knob"></div></div>
     <button id="tCollect">เก็บ!</button>
@@ -141,7 +142,7 @@ h1{font-size:clamp(32px,6vw,64px);line-height:1.15;text-align:center;text-shadow
   </div>
 </div>
 
-<div id="bigmap"><canvas id="bigCanvas" width="640" height="640"></canvas><div style="font-size:16px">🔺 สีชมพู = ตำแหน่งของคุณ · กด M หรือแตะเพื่อปิด</div></div>
+<div id="bigmap"><canvas id="bigCanvas" width="640" height="640"></canvas><div style="font-size:16px">🔺 สีชมพู = ตำแหน่งและทิศทางของคุณ · กด M หรือแตะเพื่อปิด</div></div>
 
 <div id="endScreen" class="screen">
   <div class="card">
@@ -160,7 +161,7 @@ h1{font-size:clamp(32px,6vw,64px);line-height:1.15;text-align:center;text-shadow
     </div>
     <div class="row">
       <button class="btn" id="btnHome">🏠 กลับหน้าแรก</button>
-      <button class="btn primary" id="btnNext">▶ เล่นเกมถัดไป</button>
+      <button class="btn primary" id="btnNext">▶ เริ่มเล่นเกมถัดไป</button>
     </div>
   </div>
 </div>
@@ -179,7 +180,7 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 
 /* =========================================================
-   1) ข้อมูลเกม
+   1) ข้อมูลเกมและฟังก์ชันตัวช่วย
    ========================================================= */
 const GAME_TIME = 180;
 const THEMES = {
@@ -214,7 +215,6 @@ const SPECIES = [
 ];
 
 const spById = id => SPECIES.find(s => s.id === id) || SPECIES[0];
-
 const $ = id => document.getElementById(id);
 const rand = (a,b) => a + Math.random()*(b-a);
 const randi = (a,b) => Math.floor(a + Math.random()*(b-a+1));
@@ -224,6 +224,23 @@ const mtof = m => 440*Math.pow(2,(m-69)/12);
 const NOTE = {C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 const notes = s => s.trim().split(/\s+/).map(t => { if (t==='.') return 0; const m=t.match(/^([A-G])(#|b)?(\d)$/); return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0); });
 const triad = (r,minor) => [r, r+(minor?3:4), r+7];
+
+// ฟังก์ชันสับเปลี่ยนอาร์เรย์ (แก้ไขสาเหตุที่ทำให้เกมเดิม Error และเวลานิ่ง)
+const shuffle = a => {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
+
+// ฟังก์ชันหมุนมุมที่ใกล้ที่สุดอย่างนุ่มนวล
+function lerpAngle(from, to, t) {
+  let diff = (to - from) % (Math.PI * 2);
+  if (diff < -Math.PI) diff += Math.PI * 2;
+  if (diff > Math.PI) diff -= Math.PI * 2;
+  return from + diff * t;
+}
 
 /* =========================================================
    2) ระบบเสียง Web Audio API (สังเคราะห์เสียงทั้งหมด)
@@ -385,6 +402,7 @@ function M(color,o={}){
     side:o.ds?THREE.DoubleSide:THREE.FrontSide, flatShading:!!o.flat
   });
 }
+
 function mesh(geo,mat,x=0,y=0,z=0,rx=0,ry=0,rz=0,s=1){
   const m=new THREE.Mesh(geo,mat);
   m.position.set(x,y,z); m.rotation.set(rx,ry,rz);
@@ -392,61 +410,6 @@ function mesh(geo,mat,x=0,y=0,z=0,rx=0,ry=0,rz=0,s=1){
   m.castShadow=true; m.receiveShadow=true;
   return m;
 }
-
-function canvasTex(size,draw){
-  const c=document.createElement('canvas'); c.width=c.height=size;
-  const g=c.getContext('2d'); draw(g,size);
-  const t=new THREE.CanvasTexture(c);
-  t.wrapS=t.wrapT=THREE.RepeatWrapping;
-  t.colorSpace=THREE.SRGBColorSpace;
-  return t;
-}
-function speckle(g,s,n,col,max=3){
-  g.fillStyle=col;
-  for(let i=0;i<n;i++){ const r=Math.random()*max+.5; g.fillRect(Math.random()*s,Math.random()*s,r,r); }
-}
-
-const TEX = {
-  brick:()=>canvasTex(512,(g,s)=>{
-    g.fillStyle='#2a2522'; g.fillRect(0,0,s,s);
-    const rows=8,bh=s/rows,bw=s/3;
-    for(let r=0;r<rows;r++){
-      const off=(r%2)*bw/2;
-      for(let c=-1;c<4;c++){
-        g.fillStyle=`hsl(${20+Math.random()*20},${8+Math.random()*10}%,${28+Math.random()*16}%)`;
-        g.fillRect(c*bw+off+4,r*bh+4,bw-8,bh-8);
-      }
-    }
-    speckle(g,s,2500,'rgba(0,0,0,.25)');
-  }),
-  stone:()=>canvasTex(512,(g,s)=>{
-    g.fillStyle='#1c1a20'; g.fillRect(0,0,s,s);
-    const n=4,w=s/n;
-    for(let i=0;i<n;i++)for(let j=0;j<n;j++){
-      g.fillStyle=`hsl(240,5%,${22+rand(0,10)}%)`; g.fillRect(i*w+4,j*w+4,w-8,w-8);
-    }
-    speckle(g,s,3000,'rgba(255,255,255,.05)');
-  }),
-  hedge:()=>canvasTex(256,(g,s)=>{
-    g.fillStyle='#173e16'; g.fillRect(0,0,s,s);
-    for(let i=0;i<4000;i++){
-      g.fillStyle=`hsl(${100+rand(0,35)},60%,${22+rand(0,18)}%)`;
-      g.fillRect(Math.random()*s,Math.random()*s,rand(3,8),rand(3,8));
-    }
-  }),
-  snow:()=>canvasTex(256,(g,s)=>{
-    g.fillStyle='#edf4fa'; g.fillRect(0,0,s,s);
-    for(let i=0;i<100;i++){
-      g.fillStyle='rgba(190,215,245,.4)'; g.beginPath(); g.arc(Math.random()*s,Math.random()*s,rand(5,20),0,7); g.fill();
-    }
-    speckle(g,s,1200,'rgba(255,255,255,.7)');
-  }),
-  sand:()=>canvasTex(256,(g,s)=>{
-    g.fillStyle='#cfb07a'; g.fillRect(0,0,s,s);
-    speckle(g,s,4000,'rgba(140,110,60,.3)',2);
-    speckle(g,s,2000,'rgba(255,245,210,.35)',2);
-  })
-};
 
 /* =========================================================
    4) การสร้างตัวละคร 3 มิติ และชุดตามธีม + เพศ
@@ -464,7 +427,7 @@ function buildCharacter(spec, themeKey, gender='female'){
   torso.scale.set(.9, 1.15, .8);
   g.add(torso);
 
-  // พุงขาว
+  // พุงขาว (ด้านหน้า +Z)
   const belly = mesh(Sph(.55, 12, 10), cBelly, 0, .82, .3);
   belly.scale.set(.7, 1, .45);
   g.add(belly);
@@ -524,7 +487,6 @@ function buildCharacter(spec, themeKey, gender='female'){
   // --- ชุดแต่งกายตามธีมและเพศ ---
   const accent = gender==='female' ? 0xff4fa0 : 0x3f72af;
   if(themeKey==='magic'){
-    // เสื้อคลุมพ่อมด/แม่มด และหมวกยอดแหลม
     const robeMat = M(gender==='female'?0x4a1c6d:0x22204c, {r:.6});
     const robe = mesh(Cone(.85, 1.2, 14, true), robeMat, 0, .75, 0);
     const hatRim = mesh(Cyl(.8, .85, .05, 16), robeMat, 0, 2.3, .05);
@@ -532,7 +494,6 @@ function buildCharacter(spec, themeKey, gender='female'){
     const band = mesh(Cyl(.53, .53, .12, 16), M(accent,{e:accent,ei:.3}), 0, 2.38, .05);
     g.add(robe, hatRim, hatCone, band);
   } else if(themeKey==='snow'){
-    // เสื้อกันหนาวขนสัตว์หนาๆ + หมวกไหมพรม
     const coatMat = M(gender==='female'?0xd85b88:0x39739d, {r:.8});
     const furMat = M(0xfafafa, {r:.9});
     const coat = mesh(Cyl(.68, .75, .95, 12), coatMat, 0, .85, 0);
@@ -541,7 +502,6 @@ function buildCharacter(spec, themeKey, gender='female'){
     const pompom = mesh(Sph(.18, 8, 8), furMat, 0, 2.85, .05);
     g.add(coat, collar, beanie, pompom);
   } else if(themeKey==='maze'){
-    // ชุดเดินป่า หมวกซาฟารี และเป้สะพายหลัง
     const vestMat = M(gender==='female'?0x8c6d46:0x556b2f, {r:.7});
     const vest = mesh(Box(1.1, .8, .9), vestMat, 0, .85, 0);
     const backpack = mesh(Box(.6, .7, .4), M(0x422d1c,{r:.7}), 0, .9, -.65);
@@ -549,7 +509,6 @@ function buildCharacter(spec, themeKey, gender='female'){
     const hatTop = mesh(Cyl(.5, .55, .35, 14), vestMat, 0, 2.48, .05);
     g.add(vest, backpack, hatBrim, hatTop);
   } else if(themeKey==='ocean'){
-    // ชุดดำน้ำ หน้ากาก ถังออกซิเจน และตีนกบ
     const suitMat = M(gender==='female'?0x008080:0x1b4965, {r:.3, m:.2});
     const finMat = M(0xffcc00, {r:.4});
     const maskMat = M(0x111111, {r:.2});
@@ -562,7 +521,6 @@ function buildCharacter(spec, themeKey, gender='female'){
     const finR = mesh(Box(.32, .06, .65), finMat, .3, .08, .3);
     g.add(suit, tank, mask, glass, finL, finR);
   }
-
   return g;
 }
 
@@ -673,7 +631,6 @@ let zones = [];
 let itemSpawns = [];
 let activeItems = [];
 let playerMesh = null;
-let particles = null;
 
 function clearWorld(){
   if (worldGroup){ scene.remove(worldGroup); worldGroup=null; }
@@ -682,13 +639,11 @@ function clearWorld(){
   itemSpawns = [];
   activeItems.forEach(it=>scene.remove(it.mesh));
   activeItems = [];
-  if (particles){ scene.remove(particles); particles=null; }
 }
 
 function buildThemeWorld(themeKey){
   clearWorld();
   worldGroup = G();
-
   const th = THEMES[themeKey];
   scene.fog = new THREE.FogExp2(th.fog, th.fogDen);
   renderer.setClearColor(th.fog);
@@ -696,7 +651,6 @@ function buildThemeWorld(themeKey){
   // แสงหลัก
   const hemi = new THREE.HemisphereLight(0xffffff, 0x444455, themeKey==='magic'?0.4:0.9);
   worldGroup.add(hemi);
-
   const dirLight = new THREE.DirectionalLight(0xfff5e6, themeKey==='magic'?0.6:1.2);
   dirLight.position.set(30, 45, 25);
   dirLight.castShadow = true;
@@ -732,7 +686,6 @@ function buildThemeWorld(themeKey){
   });
 
   if (themeKey==='magic'){
-    // --- ปราสาทโรงเรียนเวทมนตร์ (7 ห้องย่อย + คบเพลิง) ---
     const wallMat = M(0x3f3647, {r:.8});
     const roomDefs = [
       {name:'โถงทางเข้าใหญ่', x:0, z:0, r:10},
@@ -744,8 +697,6 @@ function buildThemeWorld(themeKey){
       {name:'ทางเดินลับใต้ดิน', x:0, z:32, r:8}
     ];
     zones = roomDefs;
-
-    // สร้างกำแพงกั้นห้องย่อย
     const castleWalls = [
       {x:-12, z:-14, sx:18, sz:2}, {x:12, z:-14, sx:18, sz:2},
       {x:-12, z:14, sx:18, sz:2}, {x:12, z:14, sx:18, sz:2},
@@ -758,8 +709,6 @@ function buildThemeWorld(themeKey){
       worldGroup.add(m);
       colliders.push({box:new THREE.Box3().setFromObject(m)});
     });
-
-    // เสาหินและคบเพลิง
     roomDefs.forEach(r=>{
       const torch = new THREE.PointLight(0xffaa44, 1.8, 16);
       torch.position.set(r.x, 4, r.z);
@@ -768,13 +717,10 @@ function buildThemeWorld(themeKey){
       worldGroup.add(post);
       colliders.push({box:new THREE.Box3().setFromObject(post)});
     });
-
   } else if (themeKey==='snow'){
-    // --- เมืองหิมะ (ป่าสน, ลานหิมะ, ทางแยก) ---
     const treeTrunk = M(0x422a1d, {r:.9});
     const leaves = M(0x284f3c, {r:.7});
     const snowTop = M(0xf0f7fc, {r:.9});
-
     zones = [
       {name:'ลานหิมะกลาง', x:0, z:0, r:12},
       {name:'ป่าสนเหนือ', x:0, z:-28, r:14},
@@ -782,14 +728,11 @@ function buildThemeWorld(themeKey){
       {name:'ลานกวางเรนเดียร์', x:28, z:0, r:14},
       {name:'ทางแยกต้นสนสามต้น', x:0, z:28, r:14}
     ];
-
-    // ปลูกต้นสนตามแนวป่า
     for(let i=0; i<65; i++){
       const ang = Math.random()*Math.PI*2;
       const dist = rand(9, 44);
       const tx = Math.cos(ang)*dist, tz = Math.sin(ang)*dist;
       if (Math.hypot(tx,tz) < 7) continue;
-
       const tree = G();
       const trunk = mesh(Cyl(.35, .5, 2.5, 8), treeTrunk, 0, 1.25, 0);
       const c1 = mesh(Cone(2.2, 2.5, 8), leaves, 0, 3, 0);
@@ -799,17 +742,13 @@ function buildThemeWorld(themeKey){
       tree.add(trunk, c1, s1, c2, s2);
       tree.position.set(tx, 0, tz);
       worldGroup.add(tree);
-
       const hit = mesh(Cyl(.8, .8, 6, 6), boundMat, tx, 3, tz);
       hit.visible = false;
       worldGroup.add(hit);
       colliders.push({box:new THREE.Box3().setFromObject(hit)});
     }
-
   } else if (themeKey==='maze'){
-    // --- สนามเขาวงกต (ลานหญ้าใจกลาง + กำแพงพุ่มไม้) ---
     const hedgeMat = M(0x1e501a, {r:.85});
-
     zones = [
       {name:'ลานน้ำพุใจกลาง', x:0, z:0, r:10},
       {name:'เขาวงกตทิศเหนือ', x:0, z:-26, r:12},
@@ -817,25 +756,18 @@ function buildThemeWorld(themeKey){
       {name:'ซุ้มกุหลาบตะวันตก', x:-26, z:0, r:12},
       {name:'ทางออกลับตะวันออก', x:26, z:0, r:12}
     ];
-
-    // น้ำพุตรงกลาง
     const fountainBase = mesh(Cyl(3, 3.2, .8, 16), M(0xcccccc), 0, .4, 0);
     const water = mesh(Cyl(2.7, 2.7, .1, 16), M(0x29b6f6,{t:.7,r:.1}), 0, .8, 0);
     const pillar = mesh(Cyl(.5, .6, 2.4, 12), M(0xbbbbbb), 0, 1.2, 0);
     worldGroup.add(fountainBase, water, pillar);
     colliders.push({box:new THREE.Box3().setFromObject(fountainBase)});
-
-    // กำแพงเขาวงกตหลายช่องทาง
     const hedges = [
-      // วงใน
       {x:0, z:-12, sx:16, sz:2.5}, {x:0, z:12, sx:16, sz:2.5},
       {x:-12, z:0, sx:2.5, sz:16}, {x:12, z:0, sx:2.5, sz:16},
-      // วงกลาง
       {x:-18, z:-24, sx:18, sz:2.5}, {x:18, z:-24, sx:18, sz:2.5},
       {x:-18, z:24, sx:18, sz:2.5}, {x:18, z:24, sx:18, sz:2.5},
       {x:-24, z:-10, sx:2.5, sz:20}, {x:24, z:-10, sx:2.5, sz:20},
       {x:-24, z:14, sx:2.5, sz:18}, {x:24, z:14, sx:2.5, sz:18},
-      // วงนอก
       {x:0, z:-36, sx:36, sz:2.5}, {x:0, z:36, sx:36, sz:2.5},
       {x:-36, z:0, sx:2.5, sz:36}, {x:36, z:0, sx:2.5, sz:36}
     ];
@@ -844,13 +776,10 @@ function buildThemeWorld(themeKey){
       worldGroup.add(m);
       colliders.push({box:new THREE.Box3().setFromObject(m)});
     });
-
   } else if (themeKey==='ocean'){
-    // --- มหาสมุทร (โขดหิน, ดอกไม้ทะเล, ถ้ำ 2 แห่ง) ---
     const rockMat = M(0x3b424c, {r:.8});
     const coralMat1 = M(0xff4081, {r:.6});
     const coralMat2 = M(0x00e5ff, {r:.5});
-
     zones = [
       {name:'แนวปะการังสีฟ้า', x:0, z:0, r:12},
       {name:'โพรงถ้ำใต้สมุทร 1', x:-26, z:-26, r:11},
@@ -858,8 +787,6 @@ function buildThemeWorld(themeKey){
       {name:'ทุ่งดอกไม้ทะเล', x:26, z:-24, r:11},
       {name:'ลานหอยมุกโบราณ', x:-26, z:24, r:11}
     ];
-
-    // ถ้ำ 1 & 2
     const caves = [{x:-26, z:-26}, {x:26, z:26}];
     caves.forEach(c=>{
       const caveArch = mesh(Tor(5, 1.8, 8, 16, Math.PI), rockMat, c.x, 1, c.z, 0, Math.PI/4);
@@ -869,8 +796,6 @@ function buildThemeWorld(themeKey){
       worldGroup.add(postL, postR);
       colliders.push({box:new THREE.Box3().setFromObject(postL)}, {box:new THREE.Box3().setFromObject(postR)});
     });
-
-    // ก้อนหินและแนวปะการังกระจายทั่วทะเล
     for(let i=0; i<45; i++){
       const rx = rand(-40, 40), rz = rand(-40, 40);
       if (Math.hypot(rx, rz) < 6) continue;
@@ -879,8 +804,6 @@ function buildThemeWorld(themeKey){
       rock.scale.set(1.2, .8, 1);
       worldGroup.add(rock);
       colliders.push({box:new THREE.Box3().setFromObject(rock)});
-
-      // ดอกไม้ทะเล/ปะการังบนโขดหิน
       if (Math.random()<.6){
         const coral = mesh(Cone(.4, 1.2, 6), (i%2===0?coralMat1:coralMat2), rx+rand(-.5,.5), scale*1.5, rz+rand(-.5,.5));
         worldGroup.add(coral);
@@ -888,14 +811,12 @@ function buildThemeWorld(themeKey){
     }
   }
 
-  // กำหนดจุดเกิดไอเทม 24 จุดรอบแผนที่
   itemSpawns = [];
   for(let x=-34; x<=34; x+=17){
     for(let z=-34; z<=34; z+=17){
       if(Math.hypot(x,z) > 4) itemSpawns.push({x:x+rand(-2,2), z:z+rand(-2,2)});
     }
   }
-
   scene.add(worldGroup);
 }
 
@@ -911,7 +832,6 @@ function initPreview(){
   prevCam = new THREE.PerspectiveCamera(45, 340/400, .1, 20);
   prevCam.position.set(0, 1.4, 4);
   prevCam.lookAt(0, 1.2, 0);
-
   const light = new THREE.DirectionalLight(0xffffff, 1.6);
   light.position.set(5, 8, 6);
   const hemi = new THREE.HemisphereLight(0xffffff, 0x555566, 1);
@@ -930,7 +850,6 @@ function updatePreview(){
 let curThemeKey = 'magic';
 let curSpeciesId = 'glider_classic';
 let curGender = 'female';
-
 let isPlaying = false;
 let score = 0;
 let goodCount = 0;
@@ -939,15 +858,15 @@ let timeLeft = GAME_TIME;
 let targetItemId = 'potion';
 let timerInterval = null;
 
-// การเคลื่อนที่
+// การควบคุมและการเคลื่อนที่
 const keys = {};
 const playerPos = new THREE.Vector3(0, 0, 0);
 let playerYaw = 0;
-let playerSpeed = 0;
 
-// ระบบกล้องมองบุคคลที่สาม
-let camAngle = 0;
-let camPitch = 0.35;
+// ปรับระยะกล้องให้ Zoom-Out ขึ้นเป็น 9.5 (เดิม 5.5)
+let camDist = 9.5;
+let camYaw = 0;
+let camPitch = 0.45;
 let isPointerDown = false;
 let lastPointerX = 0, lastPointerY = 0;
 
@@ -959,15 +878,12 @@ function switchScreen(id){
 function spawnItems(targetId){
   activeItems.forEach(it=>scene.remove(it.mesh));
   activeItems = [];
-
   const thItems = THEMES[curThemeKey].items;
-  // บังคับให้มีของเป้าหมายอย่างน้อย 4 ชิ้นกระจายอยู่
   const list = [targetId, targetId, targetId, targetId];
   while(list.length < 14){
     list.push(pick(thItems));
   }
   shuffle(list);
-
   list.forEach((id, idx)=>{
     const pt = itemSpawns[idx % itemSpawns.length];
     const m = createItemMesh(id);
@@ -985,35 +901,29 @@ function startGame(){
   goodCount = 0;
   badCount = 0;
   timeLeft = GAME_TIME;
-
   $('score').textContent = '0';
   $('goodCnt').textContent = '0';
   $('badCnt').textContent = '0';
   $('timer').textContent = '3:00';
   $('timer').classList.remove('low');
 
-  // สุ่มของเป้าหมาย 1 ชิ้นประจำเกมนี้
   targetItemId = pick(THEMES[curThemeKey].items);
   $('targetIcon').textContent = ITEMS[targetItemId].icon;
   $('targetText').textContent = ITEMS[targetItemId].name;
 
-  // สร้างโลกและตัวละคร
   buildThemeWorld(curThemeKey);
   playerMesh = buildCharacter(spById(curSpeciesId), curThemeKey, curGender);
   scene.add(playerMesh);
 
-  // ตั้งตำแหน่งเกิดผู้เล่น
   playerPos.set(0, 0, 4);
   playerYaw = 0;
-  camAngle = 0;
-  camPitch = 0.35;
+  camYaw = 0;
+  camPitch = 0.45;
 
   spawnItems(targetItemId);
-
-  // เล่นเพลงประจำธีม
   A.play(curThemeKey);
 
-  // เริ่มตัวนับเวลา 3 นาที
+  // เริ่มตัวนับเวลา 3 นาทีอย่างถูกต้อง
   clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
     if (!isPlaying) return;
@@ -1021,7 +931,6 @@ function startGame(){
     const m = Math.floor(timeLeft/60);
     const s = timeLeft%60;
     $('timer').textContent = `${m}:${s<10?'0':''}${s}`;
-
     if (timeLeft <= 10){
       $('timer').classList.add('low');
       A.tick();
@@ -1036,7 +945,6 @@ function tryCollect(){
   if (!isPlaying) return;
   let nearest = null;
   let minDist = 3.6;
-
   activeItems.forEach(it=>{
     const d = playerPos.distanceTo(it.mesh.position);
     if (d < minDist){
@@ -1044,10 +952,8 @@ function tryCollect(){
       nearest = it;
     }
   });
-
   if (!nearest) return;
 
-  // เสียงเปิดกระเป๋า
   A.bag();
   const bagIc = $('bagIcon');
   bagIc.classList.remove('pop');
@@ -1070,12 +976,10 @@ function tryCollect(){
   }
   $('score').textContent = score;
 
-  // ลบของที่เก็บ และเติมชิ้นใหม่ลงในแผนที่
   scene.remove(nearest.mesh);
   const idx = activeItems.indexOf(nearest);
   if (idx > -1) activeItems.splice(idx, 1);
 
-  // สุ่มเกิดใหม่โดยมีโอกาสสูงที่จะเป็นของเป้าหมายเพื่อให้ผู้เล่นตามหาได้ต่อเนื่อง
   const nextId = (Math.random() < 0.45) ? targetItemId : pick(THEMES[curThemeKey].items);
   const pt = pick(itemSpawns);
   const nm = createItemMesh(nextId);
@@ -1098,15 +1002,12 @@ function endGame(){
   isPlaying = false;
   clearInterval(timerInterval);
   $('hud').classList.remove('show');
-
   A.fanfare();
 
-  // สถิติสูงสุดใน LocalStorage
   const allKey = 'th3d_all_best';
   const themeKey = `th3d_best_${curThemeKey}`;
   const prevAll = parseInt(localStorage.getItem(allKey)||'0', 10);
   const prevTheme = parseInt(localStorage.getItem(themeKey)||'0', 10);
-
   const isNew = score > prevAll;
   if (score > prevAll) localStorage.setItem(allKey, score);
   if (score > prevTheme) localStorage.setItem(themeKey, score);
@@ -1118,7 +1019,6 @@ function endGame(){
   $('bestAll').textContent = Math.max(score, prevAll);
   $('bestTheme').textContent = Math.max(score, prevTheme);
   $('newRecord').style.display = isNew && score > 0 ? 'block' : 'none';
-
   switchScreen('endScreen');
 }
 
@@ -1138,8 +1038,6 @@ function drawMap(canvas, isBig=false){
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
-
-  // พื้นหลังแผนที่
   ctx.fillStyle = (curThemeKey==='magic') ? '#1e1b29' : (curThemeKey==='snow') ? '#cbe0f2' : (curThemeKey==='maze') ? '#213a1e' : '#0c2438';
   ctx.fillRect(0, 0, w, h);
 
@@ -1148,14 +1046,12 @@ function drawMap(canvas, isBig=false){
     cy: (z + 50) / 100 * h
   });
 
-  // วาดโซน / ห้องต่างๆ
   zones.forEach(z=>{
     const p = toC(z.x, z.z);
     ctx.fillStyle = 'rgba(255,255,255,0.12)';
     ctx.beginPath();
     ctx.arc(p.cx, p.cy, (z.r/100)*w, 0, Math.PI*2);
     ctx.fill();
-
     if (isBig){
       ctx.fillStyle = '#ffffff';
       ctx.font = '14px Mitr';
@@ -1164,11 +1060,11 @@ function drawMap(canvas, isBig=false){
     }
   });
 
-  // วาดตำแหน่งตัวละคร (สามเหลี่ยมสีชมพู)
   const me = toC(playerPos.x, playerPos.z);
   ctx.save();
   ctx.translate(me.cx, me.cy);
-  ctx.rotate(-playerYaw);
+  // หมุนทิศทางหัวลูกศรให้สัมพันธ์กับทิศที่ตัวละครหันจริง
+  ctx.rotate(Math.PI - playerYaw);
   ctx.fillStyle = '#ff2a8d';
   ctx.beginPath();
   ctx.moveTo(0, -9);
@@ -1183,7 +1079,7 @@ function drawMap(canvas, isBig=false){
 }
 
 /* =========================================================
-   10) Main Render Loop & ระบบฟิสิกส์การชน
+   10) Main Render Loop & ระบบฟิสิกส์และการเคลื่อนที่ตามมุมกล้อง
    ========================================================= */
 const clock = new THREE.Clock();
 const playerBox = new THREE.Box3();
@@ -1209,37 +1105,43 @@ function animate(){
   }
 
   if (isPlaying && playerMesh){
-    // คำนวณการเดินและหมุน
-    let turn = 0, move = 0;
-    if (keys['KeyA'] || keys['ArrowLeft']) turn += 1;
-    if (keys['KeyD'] || keys['ArrowRight']) turn -= 1;
-    if (keys['KeyW'] || keys['ArrowUp']) move += 1;
-    if (keys['KeyS'] || keys['ArrowDown']) move -= 1;
+    // คำนวณ Input การเดินตามแกน
+    let inputX = 0, inputZ = 0;
+    if (keys['KeyW'] || keys['ArrowUp']) inputZ -= 1;
+    if (keys['KeyS'] || keys['ArrowDown']) inputZ += 1;
+    if (keys['KeyA'] || keys['ArrowLeft']) inputX -= 1;
+    if (keys['KeyD'] || keys['ArrowRight']) inputX += 1;
 
-    // ระบบ Virtual Joystick บนหน้าจอสัมผัส
     if (touchMove.active){
-      turn -= touchMove.x * 1.5;
-      move -= touchMove.y;
+      inputX += touchMove.x;
+      inputZ += touchMove.y;
     }
 
-    playerYaw += turn * 2.8 * dt;
-    const isSprint = keys['ShiftLeft'] || keys['ShiftRight'];
-    const maxSpeed = (isSprint ? 12 : 7);
-    const targetSpeed = move * maxSpeed;
-    playerSpeed += (targetSpeed - playerSpeed) * 10 * dt;
+    const inputLen = Math.hypot(inputX, inputZ);
+    if (inputLen > 0.05){
+      const nx = inputX / (inputLen > 1 ? inputLen : 1);
+      const nz = inputZ / (inputLen > 1 ? inputLen : 1);
 
-    if (Math.abs(playerSpeed) > 0.05){
-      const dx = -Math.sin(playerYaw) * playerSpeed * dt;
-      const dz = -Math.cos(playerYaw) * playerSpeed * dt;
+      // เดินสัมพันธ์ตามมุมมองกล้อง (Camera-Relative Direction)
+      const moveX = nx * Math.cos(camYaw) + nz * Math.sin(camYaw);
+      const moveZ = -nx * Math.sin(camYaw) + nz * Math.cos(camYaw);
 
-      // ตรวจสอบการชนพร้อมระบบสไลด์กำแพง (Wall Sliding)
+      // หมุนตัวละครหันหน้าตามทิศทางการเดินอย่างนุ่มนวล
+      const targetYaw = Math.atan2(moveX, moveZ);
+      playerYaw = lerpAngle(playerYaw, targetYaw, Math.min(1, 14 * dt));
+
+      const isSprint = keys['ShiftLeft'] || keys['ShiftRight'];
+      const curSpeed = (isSprint ? 12 : 7.5);
+      const dx = moveX * curSpeed * dt;
+      const dz = moveZ * curSpeed * dt;
+
+      // ตรวจสอบการชนพร้อมไถลตามแนวกำแพง (Wall Sliding)
       const nextX = playerPos.x + dx;
       if (!checkCollision({x:nextX, z:playerPos.z})) playerPos.x = nextX;
       const nextZ = playerPos.z + dz;
       if (!checkCollision({x:playerPos.x, z:nextZ})) playerPos.z = nextZ;
 
-      // แอนิเมชันกระโดดดุ๊กดิ๊กเวลาเดิน/ว่ายน้ำ
-      playerMesh.position.y = Math.abs(Math.sin(clock.getElapsedTime()*12)) * 0.2;
+      playerMesh.position.y = Math.abs(Math.sin(clock.getElapsedTime() * 14)) * 0.22;
     } else {
       playerMesh.position.y = 0;
     }
@@ -1255,13 +1157,12 @@ function animate(){
       it.mesh.position.y = it.baseY + Math.sin(t*3 + it.mesh.position.x)*0.15;
     });
 
-    // อัปเดตมุมมองกล้องบุคคลที่สาม (Third-person Smooth Camera)
-    const camDist = 5.5;
-    const totalYaw = playerYaw + camAngle;
-    camera.position.x = playerPos.x + Math.sin(totalYaw) * Math.cos(camPitch) * camDist;
-    camera.position.y = playerPos.y + Math.sin(camPitch) * camDist + 1.8;
-    camera.position.z = playerPos.z + Math.cos(totalYaw) * Math.cos(camPitch) * camDist;
-    camera.lookAt(playerPos.x, playerPos.y + 1.4, playerPos.z);
+    // กล้องบุคคลที่สามระยะ Zoom-Out โคจรรอบตัวละครอย่างอิสระ
+    const cx = playerPos.x + Math.sin(camYaw) * Math.cos(camPitch) * camDist;
+    const cy = playerPos.y + Math.sin(camPitch) * camDist + 1.2;
+    const cz = playerPos.z + Math.cos(camYaw) * Math.cos(camPitch) * camDist;
+    camera.position.set(cx, cy, cz);
+    camera.lookAt(playerPos.x, playerPos.y + 1.2, playerPos.z);
 
     // ตรวจสอบไอเทมใกล้ตัวเพื่อแสดงปุ่ม Prompt
     let near = null;
@@ -1275,12 +1176,10 @@ function animate(){
       $('prompt').style.display = 'none';
     }
 
-    // อัปเดตชื่อโซนและวาดมินิแมป
     $('zoneName').textContent = `📍 ${getCurrentZoneName()}`;
     drawMap($('minimap'), false);
     if ($('bigmap').classList.contains('show')) drawMap($('bigCanvas'), true);
   }
-
   renderer.render(scene, camera);
 }
 
@@ -1290,7 +1189,6 @@ function animate(){
 const touchMove = {active:false, x:0, y:0};
 
 function initUI(){
-  // เรนเดอร์การ์ดธีม 4 โลก
   const list = $('themeList');
   list.innerHTML = '';
   for(const k in THEMES){
@@ -1316,7 +1214,6 @@ function initUI(){
   const allB = localStorage.getItem('th3d_all_best')||'0';
   $('allBest').innerHTML = `🏆 สถิติสูงสุดตลอดกาล: <b>${allB}</b> คะแนน`;
 
-  // เรนเดอร์รายชื่อสายพันธุ์สัตว์ในหน้าเลือกตัวละคร
   const spList = $('speciesList');
   spList.innerHTML = '';
   SPECIES.forEach(s=>{
@@ -1333,7 +1230,6 @@ function initUI(){
     spList.appendChild(d);
   });
 
-  // ปุ่มเลือกเพศ
   document.querySelectorAll('.gbtn').forEach(btn=>{
     if (btn.dataset.g === curGender) btn.classList.add('sel');
     btn.onclick = () => {
@@ -1365,7 +1261,7 @@ window.addEventListener('keydown', e=>{
 });
 window.addEventListener('keyup', e=>{ keys[e.code] = false; });
 
-// หมุนกล้องด้วยเมาส์
+// หมุนมุมกล้องด้วยการคลิกลากเมาส์
 window.addEventListener('pointerdown', e=>{
   if (e.target.closest('#hud, .screen, #bigmap, #muteBtn')) return;
   isPointerDown = true;
@@ -1378,12 +1274,17 @@ window.addEventListener('pointermove', e=>{
   const dy = e.clientY - lastPointerY;
   lastPointerX = e.clientX;
   lastPointerY = e.clientY;
-  camAngle -= dx * 0.007;
-  camPitch = clamp(camPitch + dy * 0.005, 0.05, 1.2);
+  camYaw -= dx * 0.007;
+  camPitch = clamp(camPitch + dy * 0.005, 0.1, 1.25);
 });
 window.addEventListener('pointerup', ()=>{ isPointerDown = false; });
 
-// Virtual Joystick สำหรับมือถือ
+// ลูกกลิ้งเมาส์สำหรับซูมเข้า/ซูมออก
+window.addEventListener('wheel', e=>{
+  camDist = clamp(camDist + (e.deltaY > 0 ? 0.8 : -0.8), 5.5, 18.0);
+}, {passive:true});
+
+// Virtual Joystick สำหรับหน้าจอสัมผัส
 const joy = $('joy'), knob = $('knob');
 joy.addEventListener('pointerdown', e=>{
   touchMove.active = true;
@@ -1399,6 +1300,7 @@ window.addEventListener('pointerup', ()=>{
     knob.style.transform = 'translate(0px, 0px)';
   }
 });
+
 function updateJoy(e){
   const r = joy.getBoundingClientRect();
   const cx = r.left + r.width/2, cy = r.top + r.height/2;
@@ -1411,12 +1313,11 @@ function updateJoy(e){
   touchMove.y = ky / 45;
 }
 
-// เช็กระบบสัมผัส
 if ('ontouchstart' in window || navigator.maxTouchPoints > 0){
   document.body.classList.add('touch');
 }
 
-// ปุ่ม UI ต่างๆ
+// ผูกฟังก์ชันปุ่มต่างๆ
 $('btnStart').onclick = () => {
   A.init();
   A.play('home');
@@ -1426,7 +1327,7 @@ $('btnStart').onclick = () => {
 $('btnBack').onclick = () => { A.click(); switchScreen('home'); A.play('home'); initUI(); };
 $('btnGo').onclick = () => { A.click(); startGame(); };
 $('btnHome').onclick = () => { A.click(); switchScreen('home'); A.play('home'); initUI(); };
-$('btnNext').onclick = () => { A.click(); openCharSelect(); };
+$('btnNext').onclick = () => { A.click(); startGame(); };
 $('minimap').onclick = () => { $('bigmap').classList.add('show'); };
 $('bigmap').onclick = () => { $('bigmap').classList.remove('show'); };
 $('tCollect').onclick = () => { tryCollect(); };
@@ -1436,7 +1337,6 @@ $('muteBtn').onclick = () => {
   $('muteBtn').textContent = m ? '🔇' : '🔊';
 };
 
-// เริ่มต้นระบบทั้งหมด
 initPreview();
 animate();
 </script>
