@@ -8,7 +8,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Mitr',sans-serif;color:#fff;user-select:none;-webkit-user-select:none;touch-action:none}
-#game{position:fixed;inset:0;width:100%;height:100%;display:block}
+#game{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
 .screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px;z-index:20;overflow-y:auto}
 .screen.active{display:flex}
 .bgfun{background:radial-gradient(circle at 20% 20%,#ffe58a 0,transparent 40%),radial-gradient(circle at 80% 30%,#ff9ad5 0,transparent 45%),linear-gradient(160deg,#ffb347,#ff6fb5 50%,#7b6cff)}
@@ -98,7 +98,7 @@ h1{font-size:clamp(32px,6vw,64px);line-height:1.15;text-align:center;text-shadow
   <div class="sub">เลือกโลกที่อยากผจญภัย แล้วตามหาของเป้าหมายให้ได้มากที่สุดใน 3 นาที!</div>
   <div id="allBest"></div>
   <div class="themes" id="themeList"></div>
-  <div class="howto">🎯 เก็บของเป้าหมาย <b>+100</b> · เก็บผิด <b>−100</b> &nbsp;|&nbsp; ⌨️ W เดินหน้า · S ถอยหลัง · A/D ซ้าย/ขวา · Shift วิ่ง · E/Space เก็บ · M แผนที่ · หมุนเมาส์/ล้อหมุนซูมเข้า-ออก</div>
+  <div class="howto">🎯 เก็บของเป้าหมาย <b>+100</b> · เก็บผิด <b>−100</b> &nbsp;|&nbsp; ⌨️ W เดินหน้า · S ถอยหลัง · A/D ซ้าย/ขวา · Shift วิ่ง · E/Space เก็บ · M แผนที่ · ลากเมาส์หมุนมุมมอง · หมุนล้อเมาส์ซูมเข้า/ออก</div>
 </div>
 
 <div id="charSelect" class="screen bgfun">
@@ -217,7 +217,6 @@ const SPECIES = [
 const spById = id => SPECIES.find(s => s.id === id) || SPECIES[0];
 const $ = id => document.getElementById(id);
 const rand = (a,b) => a + Math.random()*(b-a);
-const randi = (a,b) => Math.floor(a + Math.random()*(b-a+1));
 const pick = a => a[Math.floor(Math.random()*a.length)];
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const mtof = m => 440*Math.pow(2,(m-69)/12);
@@ -225,7 +224,6 @@ const NOTE = {C:0,D:2,E:4,F:5,G:7,A:9,B:11};
 const notes = s => s.trim().split(/\s+/).map(t => { if (t==='.') return 0; const m=t.match(/^([A-G])(#|b)?(\d)$/); return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0); });
 const triad = (r,minor) => [r, r+(minor?3:4), r+7];
 
-// ฟังก์ชันสับเปลี่ยนอาร์เรย์ (แก้ไขสาเหตุที่ทำให้เกมเดิม Error และเวลานิ่ง)
 const shuffle = a => {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -234,7 +232,6 @@ const shuffle = a => {
   return a;
 };
 
-// ฟังก์ชันหมุนมุมที่ใกล้ที่สุดอย่างนุ่มนวล
 function lerpAngle(from, to, t) {
   let diff = (to - from) % (Math.PI * 2);
   if (diff < -Math.PI) diff += Math.PI * 2;
@@ -362,11 +359,9 @@ const SONGS = {
 };
 
 /* =========================================================
-   3) Three.js พื้นฐาน & พิกเซลเท็กซ์เจอร์สังเคราะห์
+   3) Three.js พื้นฐาน & การจัดการความละเอียด Canvas
    ========================================================= */
 const renderer = new THREE.WebGLRenderer({canvas:$('game'), antialias:true});
-renderer.setPixelRatio(Math.min(devicePixelRatio,2));
-renderer.setSize(innerWidth,innerHeight);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -374,18 +369,25 @@ renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
 scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(),.04).texture;
-const camera = new THREE.PerspectiveCamera(60, innerWidth/innerHeight, .1, 250);
+const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, .1, 250);
 
-addEventListener('resize',()=>{
-  renderer.setSize(innerWidth,innerHeight);
-  camera.aspect=innerWidth/innerHeight;
+function handleResize(){
+  const w = window.innerWidth;
+  const h = window.innerHeight;
+  const pr = Math.min(window.devicePixelRatio || 1, 2);
+  renderer.setPixelRatio(pr);
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h;
   camera.updateProjectionMatrix();
+
   if (prevRenderer) {
-    prevRenderer.setSize(340,400);
-    prevCam.aspect=340/400;
+    prevRenderer.setPixelRatio(pr);
+    prevRenderer.setSize(340, 400, false);
+    prevCam.aspect = 340 / 400;
     prevCam.updateProjectionMatrix();
   }
-});
+}
+window.addEventListener('resize', handleResize);
 
 const G = () => new THREE.Group();
 const Sph = (r,a=16,b=12) => new THREE.SphereGeometry(r,a,b);
@@ -422,28 +424,23 @@ function buildCharacter(spec, themeKey, gender='female'){
   const cPink = M(spec.ear||0xe89f9f, {r:.5});
   const cEye = M(spec.eye||0x242426, {r:.2, m:.1});
 
-  // ลำตัวหลัก
   const torso = mesh(Sph(.7, 16, 14), cBody, 0, .85, 0);
   torso.scale.set(.9, 1.15, .8);
   g.add(torso);
 
-  // พุงขาว (ด้านหน้า +Z)
   const belly = mesh(Sph(.55, 12, 10), cBelly, 0, .82, .3);
   belly.scale.set(.7, 1, .45);
   g.add(belly);
 
-  // หัว
   const head = mesh(Sph(.65, 16, 14), cBody, 0, 1.8, .1);
   head.scale.set(1, .92, .95);
   g.add(head);
 
-  // ตา & จมูก
   const eyeL = mesh(Sph(.11, 10, 8), cEye, -.22, 1.86, .6);
   const eyeR = mesh(Sph(.11, 10, 8), cEye, .22, 1.86, .6);
   const nose = mesh(Sph(.07, 8, 8), cDark, 0, 1.76, .68);
   g.add(eyeL, eyeR, nose);
 
-  // หูตามสายพันธุ์
   if(spec.type==='rabbit'){
     const earGeo = Cyl(.07, .12, .8, 8);
     const earL = mesh(earGeo, cBody, -.22, 2.5, .05, 0, 0, -.15);
@@ -463,7 +460,6 @@ function buildCharacter(spec, themeKey, gender='female'){
     g.add(earL, earR);
   }
 
-  // หาง
   if(spec.type==='squirrel'){
     const tail = mesh(Tor(.55, .25, 8, 16), cBody, 0, 1.2, -.6, 0.4, 0, 0);
     g.add(tail);
@@ -475,7 +471,6 @@ function buildCharacter(spec, themeKey, gender='female'){
     g.add(tail);
   }
 
-  // แขน & ขา
   const armL = mesh(Sph(.18, 8, 8), cBody, -.55, .9, .1);
   const armR = mesh(Sph(.18, 8, 8), cBody, .55, .9, .1);
   const footL = mesh(Sph(.2, 8, 8), cDark, -.3, .16, .1);
@@ -484,7 +479,6 @@ function buildCharacter(spec, themeKey, gender='female'){
   footR.scale.set(1, .6, 1.4);
   g.add(armL, armR, footL, footR);
 
-  // --- ชุดแต่งกายตามธีมและเพศ ---
   const accent = gender==='female' ? 0xff4fa0 : 0x3f72af;
   if(themeKey==='magic'){
     const robeMat = M(gender==='female'?0x4a1c6d:0x22204c, {r:.6});
@@ -634,6 +628,7 @@ let playerMesh = null;
 
 function clearWorld(){
   if (worldGroup){ scene.remove(worldGroup); worldGroup=null; }
+  if (playerMesh){ scene.remove(playerMesh); playerMesh=null; }
   colliders = [];
   zones = [];
   itemSpawns = [];
@@ -648,7 +643,6 @@ function buildThemeWorld(themeKey){
   scene.fog = new THREE.FogExp2(th.fog, th.fogDen);
   renderer.setClearColor(th.fog);
 
-  // แสงหลัก
   const hemi = new THREE.HemisphereLight(0xffffff, 0x444455, themeKey==='magic'?0.4:0.9);
   worldGroup.add(hemi);
   const dirLight = new THREE.DirectionalLight(0xfff5e6, themeKey==='magic'?0.6:1.2);
@@ -661,7 +655,6 @@ function buildThemeWorld(themeKey){
   dirLight.shadow.camera.bottom = -60;
   worldGroup.add(dirLight);
 
-  // พื้นโลกหลัก
   const groundGeo = new THREE.PlaneGeometry(150, 150);
   let groundMat;
   if (themeKey==='magic') groundMat = M(0x28232e,{r:.8});
@@ -672,7 +665,6 @@ function buildThemeWorld(themeKey){
   ground.receiveShadow = true;
   worldGroup.add(ground);
 
-  // กำแพงล้อมรอบแผนที่
   const boundR = 48;
   const boundMat = M(0x222222, {r:.9});
   const walls = [
@@ -821,17 +813,18 @@ function buildThemeWorld(themeKey){
 }
 
 /* =========================================================
-   7) ตัวอย่างโมเดลตัวละครในหน้าเลือกตัวละคร (3D Preview)
+   7) หน้าตัวอย่างตัวละคร (3D Preview)
    ========================================================= */
 let prevRenderer, prevScene, prevCam, prevChar;
 function initPreview(){
   const canvas = $('preview');
   prevRenderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
-  prevRenderer.setSize(340, 400);
+  prevRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  prevRenderer.setSize(340, 400, false);
   prevScene = new THREE.Scene();
   prevCam = new THREE.PerspectiveCamera(45, 340/400, .1, 20);
-  prevCam.position.set(0, 1.4, 4);
-  prevCam.lookAt(0, 1.2, 0);
+  prevCam.position.set(0, 1.45, 4.2);
+  prevCam.lookAt(0, 1.35, 0);
   const light = new THREE.DirectionalLight(0xffffff, 1.6);
   light.position.set(5, 8, 6);
   const hemi = new THREE.HemisphereLight(0xffffff, 0x555566, 1);
@@ -858,15 +851,13 @@ let timeLeft = GAME_TIME;
 let targetItemId = 'potion';
 let timerInterval = null;
 
-// การควบคุมและการเคลื่อนที่
 const keys = {};
-const playerPos = new THREE.Vector3(0, 0, 0);
+const playerPos = new THREE.Vector3(0, 0, 4);
 let playerYaw = 0;
 
-// ปรับระยะกล้องให้ Zoom-Out ขึ้นเป็น 9.5 (เดิม 5.5)
-let camDist = 9.5;
+let camDist = 11.0;
 let camYaw = 0;
-let camPitch = 0.45;
+let camPitch = 0.38;
 let isPointerDown = false;
 let lastPointerX = 0, lastPointerY = 0;
 
@@ -918,12 +909,12 @@ function startGame(){
   playerPos.set(0, 0, 4);
   playerYaw = 0;
   camYaw = 0;
-  camPitch = 0.45;
+  camPitch = 0.38;
+  camDist = 11.0;
 
   spawnItems(targetItemId);
   A.play(curThemeKey);
 
-  // เริ่มตัวนับเวลา 3 นาทีอย่างถูกต้อง
   clearInterval(timerInterval);
   timerInterval = setInterval(()=>{
     if (!isPlaying) return;
@@ -939,6 +930,8 @@ function startGame(){
       endGame();
     }
   }, 1000);
+
+  handleResize();
 }
 
 function tryCollect(){
@@ -1063,7 +1056,6 @@ function drawMap(canvas, isBig=false){
   const me = toC(playerPos.x, playerPos.z);
   ctx.save();
   ctx.translate(me.cx, me.cy);
-  // หมุนทิศทางหัวลูกศรให้สัมพันธ์กับทิศที่ตัวละครหันจริง
   ctx.rotate(Math.PI - playerYaw);
   ctx.fillStyle = '#ff2a8d';
   ctx.beginPath();
@@ -1079,7 +1071,7 @@ function drawMap(canvas, isBig=false){
 }
 
 /* =========================================================
-   10) Main Render Loop & ระบบฟิสิกส์และการเคลื่อนที่ตามมุมกล้อง
+   10) Main Render Loop & กล้องเล็งกลางตัวละคร
    ========================================================= */
 const clock = new THREE.Clock();
 const playerBox = new THREE.Box3();
@@ -1105,7 +1097,6 @@ function animate(){
   }
 
   if (isPlaying && playerMesh){
-    // คำนวณ Input การเดินตามแกน
     let inputX = 0, inputZ = 0;
     if (keys['KeyW'] || keys['ArrowUp']) inputZ -= 1;
     if (keys['KeyS'] || keys['ArrowDown']) inputZ += 1;
@@ -1122,11 +1113,9 @@ function animate(){
       const nx = inputX / (inputLen > 1 ? inputLen : 1);
       const nz = inputZ / (inputLen > 1 ? inputLen : 1);
 
-      // เดินสัมพันธ์ตามมุมมองกล้อง (Camera-Relative Direction)
       const moveX = nx * Math.cos(camYaw) + nz * Math.sin(camYaw);
       const moveZ = -nx * Math.sin(camYaw) + nz * Math.cos(camYaw);
 
-      // หมุนตัวละครหันหน้าตามทิศทางการเดินอย่างนุ่มนวล
       const targetYaw = Math.atan2(moveX, moveZ);
       playerYaw = lerpAngle(playerYaw, targetYaw, Math.min(1, 14 * dt));
 
@@ -1135,7 +1124,6 @@ function animate(){
       const dx = moveX * curSpeed * dt;
       const dz = moveZ * curSpeed * dt;
 
-      // ตรวจสอบการชนพร้อมไถลตามแนวกำแพง (Wall Sliding)
       const nextX = playerPos.x + dx;
       if (!checkCollision({x:nextX, z:playerPos.z})) playerPos.x = nextX;
       const nextZ = playerPos.z + dz;
@@ -1150,21 +1138,21 @@ function animate(){
     playerMesh.position.z = playerPos.z;
     playerMesh.rotation.y = playerYaw;
 
-    // หมุนลอยไอเทม 3 มิติ
     const t = clock.getElapsedTime();
     activeItems.forEach(it=>{
       it.mesh.rotation.y += dt * 1.6;
       it.mesh.position.y = it.baseY + Math.sin(t*3 + it.mesh.position.x)*0.15;
     });
 
-    // กล้องบุคคลที่สามระยะ Zoom-Out โคจรรอบตัวละครอย่างอิสระ
+    // จุดเล็งกลางลำตัวละครอย่างแท้จริง (Center of Character)
+    const targetY = playerPos.y + 1.25;
     const cx = playerPos.x + Math.sin(camYaw) * Math.cos(camPitch) * camDist;
-    const cy = playerPos.y + Math.sin(camPitch) * camDist + 1.2;
+    const cy = targetY + Math.sin(camPitch) * camDist;
     const cz = playerPos.z + Math.cos(camYaw) * Math.cos(camPitch) * camDist;
-    camera.position.set(cx, cy, cz);
-    camera.lookAt(playerPos.x, playerPos.y + 1.2, playerPos.z);
 
-    // ตรวจสอบไอเทมใกล้ตัวเพื่อแสดงปุ่ม Prompt
+    camera.position.set(cx, cy, cz);
+    camera.lookAt(playerPos.x, targetY, playerPos.z);
+
     let near = null;
     activeItems.forEach(it=>{
       if (playerPos.distanceTo(it.mesh.position) < 3.2) near = it;
@@ -1249,7 +1237,6 @@ function openCharSelect(){
   updatePreview();
 }
 
-// ควบคุมคีย์บอร์ด
 window.addEventListener('keydown', e=>{
   keys[e.code] = true;
   if (e.code==='KeyE' || e.code==='Space'){
@@ -1261,13 +1248,13 @@ window.addEventListener('keydown', e=>{
 });
 window.addEventListener('keyup', e=>{ keys[e.code] = false; });
 
-// หมุนมุมกล้องด้วยการคลิกลากเมาส์
 window.addEventListener('pointerdown', e=>{
   if (e.target.closest('#hud, .screen, #bigmap, #muteBtn')) return;
   isPointerDown = true;
   lastPointerX = e.clientX;
   lastPointerY = e.clientY;
 });
+
 window.addEventListener('pointermove', e=>{
   if (!isPointerDown) return;
   const dx = e.clientX - lastPointerX;
@@ -1275,16 +1262,15 @@ window.addEventListener('pointermove', e=>{
   lastPointerX = e.clientX;
   lastPointerY = e.clientY;
   camYaw -= dx * 0.007;
-  camPitch = clamp(camPitch + dy * 0.005, 0.1, 1.25);
+  camPitch = clamp(camPitch + dy * 0.005, 0.05, 1.2);
 });
+
 window.addEventListener('pointerup', ()=>{ isPointerDown = false; });
 
-// ลูกกลิ้งเมาส์สำหรับซูมเข้า/ซูมออก
 window.addEventListener('wheel', e=>{
-  camDist = clamp(camDist + (e.deltaY > 0 ? 0.8 : -0.8), 5.5, 18.0);
+  camDist = clamp(camDist + (e.deltaY > 0 ? 0.8 : -0.8), 6.0, 22.0);
 }, {passive:true});
 
-// Virtual Joystick สำหรับหน้าจอสัมผัส
 const joy = $('joy'), knob = $('knob');
 joy.addEventListener('pointerdown', e=>{
   touchMove.active = true;
@@ -1317,7 +1303,6 @@ if ('ontouchstart' in window || navigator.maxTouchPoints > 0){
   document.body.classList.add('touch');
 }
 
-// ผูกฟังก์ชันปุ่มต่างๆ
 $('btnStart').onclick = () => {
   A.init();
   A.play('home');
@@ -1338,6 +1323,7 @@ $('muteBtn').onclick = () => {
 };
 
 initPreview();
+handleResize();
 animate();
 </script>
 </body>
