@@ -35,6 +35,8 @@ h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; te
 .btn:hover { transform: translateY(-2px); }
 .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.2); }
 .btn.primary { background: #ffd23f; color: #6a3500; }
+.btn.danger { background: #ff5252; color: #fff; }
+.btn.danger:hover { background: #ff3838; }
 .themes {
   display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 12px; width: 100%; max-width: 880px; margin-top: 16px;
@@ -87,7 +89,7 @@ h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; te
 /* HUD */
 #hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; display: none; }
 #hud.show { display: block; }
-.top { position: absolute; left: 10px; top: 10px; display: flex; gap: 6px; flex-wrap: wrap; max-width: calc(100% - 130px); }
+.top { position: absolute; left: 10px; top: 10px; display: flex; gap: 6px; flex-wrap: wrap; max-width: calc(100% - 180px); }
 .panel {
   background: rgba(10,10,30,.65); backdrop-filter: blur(6px); border-radius: 10px;
   padding: 4px 10px; border: 1px solid rgba(255,255,255,.2);
@@ -104,14 +106,16 @@ h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; te
 .ok { color: #7dff9a; }
 .no { color: #ff8080; }
 
-/* แผนที่มุมบนขวา */
+/* แผนที่และปุ่มออกจากเกมที่มุมบนขวา */
 .top-right-box { position: absolute; right: 10px; top: 10px; display: flex; align-items: center; gap: 6px; pointer-events: auto; }
-#btnMapIcon {
+.hud-round-btn {
   width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff;
-  background: #ffd23f; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.35);
+  font-size: 18px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.35);
   transition: transform .12s; display: flex; align-items: center; justify-content: center;
 }
-#btnMapIcon:active { transform: scale(.9); }
+.hud-round-btn:active { transform: scale(.9); }
+#btnMapIcon { background: #ffd23f; }
+#btnExitIcon { background: #ff4757; }
 #zoneName { font-size: 12px; padding: 6px 12px; white-space: nowrap; font-weight: 600; }
 #prompt {
   position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%);
@@ -142,6 +146,20 @@ h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; te
   font-size: 13px; color: #fff; background: rgba(20,15,40,.8);
   border: 1px solid rgba(255,255,255,.2); padding: 6px 16px; border-radius: 20px;
 }
+
+/* กล่องยืนยันการออกจากเกม (Exit Modal) */
+#exitModal {
+  position: fixed; inset: 0; background: rgba(0,0,0,.75); backdrop-filter: blur(6px);
+  z-index: 35; display: none; align-items: center; justify-content: center; padding: 16px;
+}
+#exitModal.show { display: flex; }
+.modal-card {
+  background: linear-gradient(160deg, #2b1f48, #18122b);
+  border: 2px solid rgba(255,255,255,.2); border-radius: 20px; padding: 22px 26px;
+  text-align: center; max-width: 360px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,.6);
+}
+.modal-card h3 { font-size: 20px; margin-bottom: 6px; }
+.modal-card p { font-size: 13px; opacity: .88; margin-bottom: 16px; }
 
 #endScreen { background: rgba(10,5,30,.65); backdrop-filter: blur(4px); }
 .card {
@@ -213,7 +231,7 @@ h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; te
   <div class="sub">เลือกโลกที่อยากผจญภัย แล้วตามหาของเป้าหมายให้ได้มากที่สุดใน 3 นาที!</div>
   <div id="allBest"></div>
   <div class="themes" id="themeList"></div>
-  <div class="howto">🎯 เก็บเป้าหมาย <b>+100</b> · ผิด <b>−100</b> &nbsp;|&nbsp; 🕹️ ดึงปุ่มเดินสุดขอบเพื่อวิ่งสปีด · E/Space เก็บ · M แผนที่</div>
+  <div class="howto">🎯 เก็บเป้าหมาย <b>+100</b> · ผิด <b>−100</b> &nbsp;|&nbsp; 🕹️ ดึงปุ่มเดินสุดขอบเพื่อวิ่งสปีด · E/Space เก็บ · M แผนที่ · Esc/🚪 ออก</div>
 </div>
 
 <div id="charSelect" class="screen bgfun">
@@ -247,10 +265,11 @@ h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; te
   </div>
   <div class="top-right-box">
     <div id="zoneName" class="panel"></div>
-    <button id="btnMapIcon" title="เปิดแผนที่ (M)">🗺️</button>
+    <button id="btnMapIcon" class="hud-round-btn" title="เปิดแผนที่ (M)">🗺️</button>
+    <button id="btnExitIcon" class="hud-round-btn" title="ออกจากเกม (Esc)">🚪</button>
   </div>
   <div id="prompt" class="panel"></div>
-  <div id="help" class="panel">W/S/A/D เดินตามมุมกล้อง · Shift วิ่ง (จอยสติ๊กลากสุดขอบ) · E/Space เก็บ · M แผนที่</div>
+  <div id="help" class="panel">W/S/A/D เดินตามมุมกล้อง · Shift วิ่ง (จอยสติ๊กลากสุดขอบ) · E/Space เก็บ · M แผนที่ · Esc ออก</div>
   <div id="touch">
     <div id="joy">
       <div id="joy-tip">⚡ กำลังวิ่ง!</div>
@@ -260,9 +279,23 @@ h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; te
   </div>
 </div>
 
+<!-- หน้าต่างแผนที่ขนาดใหญ่ -->
 <div id="bigmap">
   <canvas id="bigCanvas" width="540" height="540"></canvas>
   <div class="map-hint">🧭 ลูกศรสีชมพู = ตำแหน่งและทิศทางของคุณ · แตะที่ใดก็ได้เพื่อปิด</div>
+</div>
+
+<!-- กล่องยืนยันการออกจากเกม -->
+<div id="exitModal">
+  <div class="modal-card">
+    <div style="font-size:40px;margin-bottom:8px">🚪</div>
+    <h3>ต้องการออกจากเกม?</h3>
+    <p>ความคืบหน้าของรอบนี้จะไม่ถูกบันทึก และจะกลับไปยังหน้าเลือกธีม</p>
+    <div class="row">
+      <button class="btn" id="btnCancelExit">เล่นต่อ</button>
+      <button class="btn danger" id="btnConfirmExit">ออกจากเกม</button>
+    </div>
+  </div>
 </div>
 
 <div id="endScreen" class="screen">
@@ -1050,6 +1083,8 @@ function spawnItems(targetId) {
 function startGame() {
   switchScreen(null);
   $('hud').classList.add('show');
+  $('exitModal').classList.remove('show');
+  $('bigmap').classList.remove('show');
   isPlaying = true;
   score = 0;
   goodCount = 0;
@@ -1094,6 +1129,18 @@ function startGame() {
   }, 1000);
 
   handleResize();
+}
+
+function exitGameToThemes() {
+  isPlaying = false;
+  clearInterval(timerInterval);
+  $('hud').classList.remove('show');
+  $('exitModal').classList.remove('show');
+  $('bigmap').classList.remove('show');
+  clearWorld();
+  switchScreen('home');
+  A.play('home');
+  initUI();
 }
 
 function tryCollect() {
@@ -1157,6 +1204,7 @@ function endGame() {
   isPlaying = false;
   clearInterval(timerInterval);
   $('hud').classList.remove('show');
+  $('exitModal').classList.remove('show');
   A.fanfare();
 
   const allKey = 'th3d_all_best';
@@ -1194,13 +1242,11 @@ function drawMap(canvas) {
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
 
-  // พื้นหลังแผนที่ตามธีม
   ctx.fillStyle = (curThemeKey === 'magic') ? '#191526' :
                   (curThemeKey === 'snow')  ? '#bad4ed' :
                   (curThemeKey === 'maze')  ? '#1c3319' : '#0a1d2e';
   ctx.fillRect(0, 0, w, h);
 
-  // ขอบเขตและเส้นตารางแผนที่
   ctx.strokeStyle = 'rgba(255,255,255,0.08)';
   ctx.lineWidth = 1;
   for (let i = 0; i <= w; i += 54) {
@@ -1208,20 +1254,17 @@ function drawMap(canvas) {
     ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
   }
 
-  // แปลงพิกัด 3D (-48 ถึง 48) เป็นพิกัดแคนวาส 2D
   const toC = (x, z) => ({
     cx: ((x + 48) / 96) * (w - 40) + 20,
     cy: ((z + 48) / 96) * (h - 40) + 20
   });
 
-  // ขอบกำแพงเขตพื้นที่
   const pMin = toC(-48, -48);
   const pMax = toC(48, 48);
   ctx.strokeStyle = 'rgba(255,255,255,0.4)';
   ctx.lineWidth = 2.5;
   ctx.strokeRect(pMin.cx, pMin.cy, pMax.cx - pMin.cx, pMax.cy - pMin.cy);
 
-  // วาดโซนและชื่อโซน
   zones.forEach(z => {
     const p = toC(z.x, z.z);
     const rad = ((z.r || 10) / 96) * (w - 40);
@@ -1244,7 +1287,6 @@ function drawMap(canvas) {
     ctx.shadowBlur = 0;
   });
 
-  // แสดงตำแหน่งของไอเทมบนแผนที่ (ไอเทมเป้าหมายเน้นสีทอง)
   activeItems.forEach(it => {
     const ip = toC(it.mesh.position.x, it.mesh.position.z);
     const isTarget = (it.id === targetItemId);
@@ -1259,11 +1301,9 @@ function drawMap(canvas) {
     }
   });
 
-  // วาดตำแหน่งของผู้เล่น และลูกศรบอกทิศทาง (Player GPS Arrow)
   const me = toC(playerPos.x, playerPos.z);
   const curTime = performance.now() / 1000;
 
-  // วงคลื่นเรดาร์กะพริบรอบตัวผู้เล่น
   const pulseWave = (curTime * 1.5) % 1;
   ctx.save();
   ctx.beginPath();
@@ -1273,21 +1313,18 @@ function drawMap(canvas) {
   ctx.stroke();
   ctx.restore();
 
-  // ลูกศรบอกทิศทางแบบ GPS หมุนตามทิศทางหน้าตัวละครจริง
   ctx.save();
   ctx.translate(me.cx, me.cy);
   ctx.rotate(Math.PI - playerYaw);
 
-  // เงาเรืองแสงของลูกศร
   ctx.shadowColor = '#ff2a8d';
   ctx.shadowBlur = 12;
 
-  // โครงร่างและตัวลูกศรหลัก
   ctx.beginPath();
-  ctx.moveTo(0, -20);      // ยอดแหลมของลูกศร (ด้านหน้า)
-  ctx.lineTo(13, 14);      // ปีกขวา
-  ctx.lineTo(0, 7);        // รอยเว้าตรงกลาง
-  ctx.lineTo(-13, 14);     // ปีกซ้าย
+  ctx.moveTo(0, -20);
+  ctx.lineTo(13, 14);
+  ctx.lineTo(0, 7);
+  ctx.lineTo(-13, 14);
   ctx.closePath();
 
   ctx.fillStyle = '#ff2a8d';
@@ -1296,7 +1333,6 @@ function drawMap(canvas) {
   ctx.lineWidth = 3;
   ctx.stroke();
 
-  // ไฮไลต์สีขาวใจกลางลูกศรเพิ่มมิติ
   ctx.beginPath();
   ctx.moveTo(0, -14);
   ctx.lineTo(7, 10);
@@ -1307,7 +1343,6 @@ function drawMap(canvas) {
   ctx.fill();
   ctx.restore();
 
-  // ป้ายกำกับ "📍 ตัวคุณ"
   ctx.save();
   ctx.font = 'bold 12px Mitr, sans-serif';
   ctx.textAlign = 'center';
@@ -1318,7 +1353,6 @@ function drawMap(canvas) {
   ctx.fillText('📍 ตัวคุณ', me.cx, me.cy - 24);
   ctx.restore();
 
-  // เข็มทิศจำลองมุมขวาบน
   ctx.save();
   ctx.translate(w - 32, 32);
   ctx.fillStyle = 'rgba(0,0,0,0.5)';
@@ -1376,12 +1410,10 @@ function animate() {
       const targetYaw = Math.atan2(moveX, moveZ);
       playerYaw = lerpAngle(playerYaw, targetYaw, Math.min(1, 14 * dt));
 
-      // ตรวจสอบการวิ่งสปีด (กด Shift หรือลากจอยสติ๊กไปสุดขอบ)
       const isKeySprint = keys['ShiftLeft'] || keys['ShiftRight'];
       const isJoySprint = touchMove.active && touchMove.sprinting;
       const isSprint = isKeySprint || isJoySprint;
 
-      // ปรับความเร็ว: เดินปกติ 7.5 | เร่งสปีดวิ่ง 13.5
       const curSpeed = isSprint ? 13.5 : 7.5;
       const dx = moveX * curSpeed * dt;
       const dz = moveZ * curSpeed * dt;
@@ -1391,7 +1423,6 @@ function animate() {
       const nextZ = playerPos.z + dz;
       if (!checkCollision({x: playerPos.x, z: nextZ})) playerPos.z = nextZ;
 
-      // เอฟเฟกต์กระโดดดุ๊กดิ๊กตามจังหวะการก้าว (วิ่งจะก้าวถี่ขึ้น)
       const stepFreq = isSprint ? 20 : 13;
       const stepH = isSprint ? 0.3 : 0.22;
       playerMesh.position.y = Math.abs(Math.sin(clock.getElapsedTime() * stepFreq)) * stepH;
@@ -1409,7 +1440,6 @@ function animate() {
       it.mesh.position.y = it.baseY + Math.sin(t * 3 + it.mesh.position.x) * 0.15;
     });
 
-    // กล้องติดตามตัวละคร
     const targetY = playerPos.y + 1.25;
     const cx = playerPos.x + Math.sin(camYaw) * Math.cos(camPitch) * camDist;
     const cy = targetY + Math.sin(camPitch) * camDist;
@@ -1505,6 +1535,12 @@ function openCharSelect() {
   updatePreview();
 }
 
+function promptExitGame() {
+  if (!isPlaying) return;
+  A.click();
+  $('exitModal').classList.add('show');
+}
+
 // แป้นพิมพ์
 window.addEventListener('keydown', e => {
   keys[e.code] = true;
@@ -1514,12 +1550,21 @@ window.addEventListener('keydown', e => {
   if (e.code === 'KeyM' && isPlaying) {
     toggleMap();
   }
+  if (e.code === 'Escape' && isPlaying) {
+    if ($('bigmap').classList.contains('show')) {
+      $('bigmap').classList.remove('show');
+    } else if ($('exitModal').classList.contains('show')) {
+      $('exitModal').classList.remove('show');
+    } else {
+      promptExitGame();
+    }
+  }
 });
 window.addEventListener('keyup', e => { keys[e.code] = false; });
 
 // หมุนมุมกล้องอิสระ
 window.addEventListener('pointerdown', e => {
-  if (e.target.closest('#hud button, .screen, #bigmap, #muteBtn, #joy, #tCollect')) return;
+  if (e.target.closest('#hud button, .screen, #bigmap, #exitModal, #muteBtn, #joy, #tCollect')) return;
   if (camPointerId === null) {
     camPointerId = e.pointerId;
     lastCamX = e.clientX;
@@ -1551,7 +1596,7 @@ window.addEventListener('wheel', e => {
 
 // ระบบ Virtual Joystick ที่รองรับการเร่งสปีดวิ่งเมื่อเลื่อนสุดขอบ
 const joy = $('joy'), knob = $('knob');
-const MAX_JOY_DIST = 42; // ระยะรัศมีสูงสุดของปุ่มควบคุม
+const MAX_JOY_DIST = 42;
 
 joy.addEventListener('pointerdown', e => {
   e.stopPropagation();
@@ -1597,7 +1642,6 @@ function updateJoy(e) {
   touchMove.x = (dist > 0) ? (Math.cos(ang) * ratio) : 0;
   touchMove.y = (dist > 0) ? (Math.sin(ang) * ratio) : 0;
 
-  // หากลากนิ้วออกมาถึง 80% ของขอบจอยขึ้นไป จะเปิดโหมดวิ่งสปีด
   const shouldSprint = (ratio >= 0.82);
   touchMove.sprinting = shouldSprint;
 
@@ -1627,7 +1671,15 @@ $('btnBack').onclick = () => { A.click(); switchScreen('home'); A.play('home'); 
 $('btnGo').onclick = () => { A.click(); startGame(); };
 $('btnHome').onclick = () => { A.click(); switchScreen('home'); A.play('home'); initUI(); };
 $('btnNext').onclick = () => { A.click(); startGame(); };
+
+// ปุ่มแผนที่ & ปุ่มออกจากเกม
 $('btnMapIcon').onclick = e => { e.stopPropagation(); toggleMap(); };
+$('btnExitIcon').onclick = e => { e.stopPropagation(); promptExitGame(); };
+
+// ปุ่มในหน้าต่างยืนยันออกจากเกม
+$('btnCancelExit').onclick = () => { A.click(); $('exitModal').classList.remove('show'); };
+$('btnConfirmExit').onclick = () => { A.click(); exitGameToThemes(); };
+
 $('bigmap').onclick = () => { $('bigmap').classList.remove('show'); };
 $('tCollect').onclick = e => { e.stopPropagation(); tryCollect(); };
 $('muteBtn').onclick = () => {
