@@ -6,92 +6,199 @@
 <title>Treasure Hunt 3D – เกมล่าหาของในโลกมหัศจรรย์</title>
 <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@300;400;600&display=swap" rel="stylesheet" />
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Mitr',sans-serif;color:#fff;user-select:none;-webkit-user-select:none;touch-action:none}
-#game{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:1}
-.screen{position:fixed;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;padding:16px;z-index:20;overflow-y:auto}
-.screen.active{display:flex}
-.bgfun{background:radial-gradient(circle at 20% 20%,#ffe58a 0,transparent 40%),radial-gradient(circle at 80% 30%,#ff9ad5 0,transparent 45%),linear-gradient(160deg,#ffb347,#ff6fb5 50%,#7b6cff)}
-h1{font-size:clamp(24px,4vw,38px);line-height:1.2;text-align:center;text-shadow:0 3px 0 rgba(0,0,0,.18)}
-.sub{opacity:.95;margin-top:4px;text-align:center;font-size:clamp(12px,1.6vw,15px)}
-.bounce{animation:bounce 1.6s ease-in-out infinite}
-@keyframes bounce{50%{transform:translateY(-8px)}}
-.btn{font-family:inherit;font-size:14px;font-weight:600;padding:8px 20px;border:none;border-radius:999px;cursor:pointer;background:#fff;color:#5a3fd6;box-shadow:0 3px 0 rgba(0,0,0,.2);transition:transform .12s}
-.btn:hover{transform:translateY(-2px)}
-.btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.2)}
-.btn.primary{background:#ffd23f;color:#6a3500}
-.themes{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;width:100%;max-width:880px;margin-top:16px}
-.theme-card{position:relative;border-radius:16px;padding:14px;min-height:160px;cursor:pointer;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:0 5px 0 rgba(0,0,0,.2);transition:transform .18s;overflow:hidden}
-.theme-card:hover{transform:translateY(-4px) rotate(-1deg)}
-.theme-card .ic{position:absolute;top:8px;right:10px;font-size:46px;filter:drop-shadow(0 3px 3px rgba(0,0,0,.3))}
-.theme-card h3{font-size:17px;text-shadow:0 2px 0 rgba(0,0,0,.25)}
-.theme-card p{font-size:12px;opacity:.95;margin-top:2px}
-.theme-card .best{font-size:11px;margin-top:6px;background:rgba(0,0,0,.28);border-radius:8px;padding:2px 8px;align-self:flex-start}
-.howto{margin-top:14px;background:rgba(255,255,255,.2);border-radius:12px;padding:8px 14px;max-width:880px;font-size:12px;text-align:center}
-#allBest{margin-top:8px;font-size:14px;background:rgba(0,0,0,.2);padding:4px 14px;border-radius:999px}
-.cs-wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:stretch;max-width:920px;width:100%}
-#preview{width:260px;height:320px;border-radius:18px;background:rgba(255,255,255,.2)}
-.cs-panel{flex:1;min-width:260px;max-width:520px;background:rgba(255,255,255,.2);border-radius:18px;padding:14px}
-.species{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px;max-height:200px;overflow-y:auto;padding-right:4px}
-.sp{background:rgba(255,255,255,.85);color:#4a2f8a;border-radius:10px;padding:6px;cursor:pointer;font-size:11px;text-align:center;border:2px solid transparent}
-.sp .e{font-size:20px;display:block}
-.sp.sel{border-color:#ffd23f;background:#fff;box-shadow:0 0 0 2px rgba(255,210,63,.55)}
-.genders{display:flex;gap:8px;margin:8px 0 10px}
-.gbtn{flex:1;padding:6px 12px;font-size:13px}
-.gbtn.sel{background:#ffd23f;color:#6a3500}
-.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  width: 100%; height: 100%; overflow: hidden; background: #000;
+  font-family: 'Mitr', sans-serif; color: #fff;
+  user-select: none; -webkit-user-select: none; touch-action: none;
+}
+#game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; z-index: 1; }
+.screen {
+  position: fixed; inset: 0; display: none; flex-direction: column;
+  align-items: center; justify-content: center; padding: 16px; z-index: 20; overflow-y: auto;
+}
+.screen.active { display: flex; }
+.bgfun {
+  background: radial-gradient(circle at 20% 20%, #ffe58a 0, transparent 40%),
+              radial-gradient(circle at 80% 30%, #ff9ad5 0, transparent 45%),
+              linear-gradient(160deg, #ffb347, #ff6fb5 50%, #7b6cff);
+}
+h1 { font-size: clamp(24px, 4vw, 38px); line-height: 1.2; text-align: center; text-shadow: 0 3px 0 rgba(0,0,0,.18); }
+.sub { opacity: .95; margin-top: 4px; text-align: center; font-size: clamp(12px, 1.6vw, 15px); }
+.bounce { animation: bounce 1.6s ease-in-out infinite; }
+@keyframes bounce { 50% { transform: translateY(-8px); } }
+.btn {
+  font-family: inherit; font-size: 14px; font-weight: 600; padding: 8px 20px;
+  border: none; border-radius: 999px; cursor: pointer; background: #fff; color: #5a3fd6;
+  box-shadow: 0 3px 0 rgba(0,0,0,.2); transition: transform .12s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,.2); }
+.btn.primary { background: #ffd23f; color: #6a3500; }
+.themes {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px; width: 100%; max-width: 880px; margin-top: 16px;
+}
+.theme-card {
+  position: relative; border-radius: 16px; padding: 14px; min-height: 160px;
+  cursor: pointer; display: flex; flex-direction: column; justify-content: flex-end;
+  box-shadow: 0 5px 0 rgba(0,0,0,.2); transition: transform .18s; overflow: hidden;
+}
+.theme-card:hover { transform: translateY(-4px) rotate(-1deg); }
+.theme-card .ic {
+  position: absolute; top: 8px; right: 10px; font-size: 46px;
+  filter: drop-shadow(0 3px 3px rgba(0,0,0,.3));
+}
+.theme-card h3 { font-size: 17px; text-shadow: 0 2px 0 rgba(0,0,0,.25); }
+.theme-card p { font-size: 12px; opacity: .95; margin-top: 2px; }
+.theme-card .best {
+  font-size: 11px; margin-top: 6px; background: rgba(0,0,0,.28);
+  border-radius: 8px; padding: 2px 8px; align-self: flex-start;
+}
+.howto {
+  margin-top: 14px; background: rgba(255,255,255,.2); border-radius: 12px;
+  padding: 8px 14px; max-width: 880px; font-size: 12px; text-align: center;
+}
+#allBest { margin-top: 8px; font-size: 14px; background: rgba(0,0,0,.2); padding: 4px 14px; border-radius: 999px; }
+.cs-wrap {
+  display: flex; gap: 16px; flex-wrap: wrap; justify-content: center;
+  align-items: stretch; max-width: 920px; width: 100%;
+}
+#preview { width: 260px; height: 320px; border-radius: 18px; background: rgba(255,255,255,.2); }
+.cs-panel {
+  flex: 1; min-width: 260px; max-width: 520px; background: rgba(255,255,255,.2);
+  border-radius: 18px; padding: 14px;
+}
+.species {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px; max-height: 200px; overflow-y: auto; padding-right: 4px;
+}
+.sp {
+  background: rgba(255,255,255,.85); color: #4a2f8a; border-radius: 10px;
+  padding: 6px; cursor: pointer; font-size: 11px; text-align: center; border: 2px solid transparent;
+}
+.sp .e { font-size: 20px; display: block; }
+.sp.sel { border-color: #ffd23f; background: #fff; box-shadow: 0 0 0 2px rgba(255,210,63,.55); }
+.genders { display: flex; gap: 8px; margin: 8px 0 10px; }
+.gbtn { flex: 1; padding: 6px 12px; font-size: 13px; }
+.gbtn.sel { background: #ffd23f; color: #6a3500; }
+.row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
 
-/* HUD กะทัดรัด */
-#hud{position:fixed;inset:0;pointer-events:none;z-index:10;display:none}
-#hud.show{display:block}
-.top{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 130px)}
-.panel{background:rgba(10,10,30,.58);backdrop-filter:blur(5px);border-radius:10px;padding:4px 10px;border:1px solid rgba(255,255,255,.18)}
-.lbl{font-size:10px;opacity:.85}
-.val{font-size:17px;font-weight:600;line-height:1.2}
-#timer{display:inline-block}
-#timer.low{color:#ff5a5a;animation:pulse .5s infinite alternate}
-@keyframes pulse{to{transform:scale(1.1)}}
-#targetIcon{font-size:20px;vertical-align:middle}
-#bagIcon{font-size:17px;display:inline-block}
-#bagIcon.pop{animation:bag .45s}
-@keyframes bag{40%{transform:scale(1.4) rotate(-12deg)}}
-.ok{color:#7dff9a}.no{color:#ff8080}
+/* HUD */
+#hud { position: fixed; inset: 0; pointer-events: none; z-index: 10; display: none; }
+#hud.show { display: block; }
+.top { position: absolute; left: 10px; top: 10px; display: flex; gap: 6px; flex-wrap: wrap; max-width: calc(100% - 130px); }
+.panel {
+  background: rgba(10,10,30,.65); backdrop-filter: blur(6px); border-radius: 10px;
+  padding: 4px 10px; border: 1px solid rgba(255,255,255,.2);
+}
+.lbl { font-size: 10px; opacity: .85; }
+.val { font-size: 17px; font-weight: 600; line-height: 1.2; }
+#timer { display: inline-block; }
+#timer.low { color: #ff5a5a; animation: pulse .5s infinite alternate; }
+@keyframes pulse { to { transform: scale(1.1); } }
+#targetIcon { font-size: 20px; vertical-align: middle; }
+#bagIcon { font-size: 17px; display: inline-block; }
+#bagIcon.pop { animation: bag .45s; }
+@keyframes bag { 40% { transform: scale(1.4) rotate(-12deg); } }
+.ok { color: #7dff9a; }
+.no { color: #ff8080; }
 
-/* แผนที่จุดเดียวที่มุมบนขวา */
-.top-right-box{position:absolute;right:10px;top:10px;display:flex;align-items:center;gap:6px;pointer-events:auto}
-#btnMapIcon{width:36px;height:36px;border-radius:50%;border:none;background:#ffd23f;font-size:18px;cursor:pointer;box-shadow:0 3px 6px rgba(0,0,0,.3);transition:transform .12s}
-#btnMapIcon:active{transform:scale(.92)}
-#zoneName{font-size:12px;padding:6px 10px;white-space:nowrap}
+/* แผนที่มุมบนขวา */
+.top-right-box { position: absolute; right: 10px; top: 10px; display: flex; align-items: center; gap: 6px; pointer-events: auto; }
+#btnMapIcon {
+  width: 40px; height: 40px; border-radius: 50%; border: 2px solid #fff;
+  background: #ffd23f; font-size: 20px; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,.35);
+  transition: transform .12s; display: flex; align-items: center; justify-content: center;
+}
+#btnMapIcon:active { transform: scale(.9); }
+#zoneName { font-size: 12px; padding: 6px 12px; white-space: nowrap; font-weight: 600; }
+#prompt {
+  position: absolute; left: 50%; bottom: 14%; transform: translateX(-50%);
+  font-size: 14px; padding: 8px 18px; display: none; white-space: nowrap;
+  background: rgba(15,10,35,.85); border: 1px solid #ffd23f; border-radius: 999px;
+}
+#help { position: absolute; left: 10px; bottom: 10px; font-size: 11px; opacity: .85; padding: 3px 8px; }
+.popup {
+  position: absolute; font-size: 24px; font-weight: 600; pointer-events: none;
+  text-shadow: 0 2px 0 rgba(0,0,0,.45); animation: floatUp 1s ease-out forwards;
+  transform: translate(-50%,-50%); white-space: nowrap; z-index: 50;
+}
+.popup.good { color: #7dff9a; }
+.popup.bad { color: #ff6b6b; font-size: 20px; }
+@keyframes floatUp { to { opacity: 0; margin-top: -60px; } }
 
-#prompt{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);font-size:13px;padding:6px 14px;display:none;white-space:nowrap}
-#help{position:absolute;left:10px;bottom:10px;font-size:11px;opacity:.85;padding:3px 8px}
-.popup{position:absolute;font-size:24px;font-weight:600;pointer-events:none;text-shadow:0 2px 0 rgba(0,0,0,.45);animation:floatUp 1s ease-out forwards;transform:translate(-50%,-50%);white-space:nowrap}
-.popup.good{color:#7dff9a}.popup.bad{color:#ff6b6b;font-size:20px}
-@keyframes floatUp{to{opacity:0;margin-top:-60px}}
+/* หน้าต่างแผนที่ขนาดใหญ่ (Big Map) */
+#bigmap {
+  position: fixed; inset: 0; background: rgba(0,0,0,.82); backdrop-filter: blur(8px);
+  z-index: 25; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 10px;
+}
+#bigmap.show { display: flex; }
+#bigCanvas {
+  width: min(84vmin, 540px); height: min(84vmin, 540px);
+  border-radius: 18px; border: 3px solid #ffd23f; box-shadow: 0 0 24px rgba(255,210,63,.45);
+}
+.map-hint {
+  font-size: 13px; color: #fff; background: rgba(20,15,40,.8);
+  border: 1px solid rgba(255,255,255,.2); padding: 6px 16px; border-radius: 20px;
+}
 
-#bigmap{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:25;display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px}
-#bigmap.show{display:flex}
-#bigCanvas{width:min(80vmin,540px);height:min(80vmin,540px);border-radius:16px;border:3px solid #fff}
+#endScreen { background: rgba(10,5,30,.65); backdrop-filter: blur(4px); }
+.card {
+  background: linear-gradient(160deg,#fff,#ffeefa); color: #4a2f8a; border-radius: 20px;
+  padding: 20px 26px; text-align: center; max-width: 440px; width: 100%; box-shadow: 0 8px 0 rgba(0,0,0,.25);
+}
+.card h2 { font-size: 24px; }
+.bigscore { font-size: 52px; font-weight: 600; color: #ff4fa0; line-height: 1.1; }
+#newRecord { display: none; color: #e09b00; font-size: 16px; margin-top: 2px; animation: pulse .6s infinite alternate; }
+.stats { margin: 10px 0; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; font-size: 13px; }
+.stats div { background: #f3ecff; border-radius: 10px; padding: 6px 10px; }
+#muteBtn {
+  position: fixed; right: 10px; bottom: 10px; z-index: 30; width: 40px; height: 40px;
+  border-radius: 50%; border: 2px solid rgba(255,255,255,.4); font-size: 18px; cursor: pointer;
+  background: rgba(255,255,255,.9); box-shadow: 0 3px 6px rgba(0,0,0,.25);
+}
 
-#endScreen{background:rgba(10,5,30,.65);backdrop-filter:blur(4px)}
-.card{background:linear-gradient(160deg,#fff,#ffeefa);color:#4a2f8a;border-radius:20px;padding:20px 26px;text-align:center;max-width:440px;width:100%;box-shadow:0 8px 0 rgba(0,0,0,.25)}
-.card h2{font-size:24px}
-.bigscore{font-size:52px;font-weight:600;color:#ff4fa0;line-height:1.1}
-#newRecord{display:none;color:#e09b00;font-size:16px;margin-top:2px;animation:pulse .6s infinite alternate}
-.stats{margin:10px 0;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;font-size:13px}
-.stats div{background:#f3ecff;border-radius:10px;padding:6px 10px}
-#muteBtn{position:fixed;right:10px;bottom:10px;z-index:30;width:38px;height:38px;border-radius:50%;border:none;font-size:18px;cursor:pointer;background:rgba(255,255,255,.88)}
-
-/* การควบคุมสัมผัส */
-#touch{display:none}
-.touch #touch{display:block}
-.touch #help{display:none}
-#joy{position:absolute;left:20px;bottom:30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.45);pointer-events:auto;touch-action:none}
-#knob{position:absolute;left:32px;top:32px;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.85);pointer-events:none}
-#tCollect{position:absolute;right:25px;bottom:35px;width:75px;height:75px;border-radius:50%;border:none;background:#ffd23f;font-size:15px;font-weight:600;color:#6a3500;box-shadow:0 4px 10px rgba(0,0,0,.3);pointer-events:auto;touch-action:none}
+/* การควบคุมสัมผัส & Virtual Joystick */
+#touch { display: none; }
+.touch #touch { display: block; }
+.touch #help { display: none; }
+#joy {
+  position: absolute; left: 24px; bottom: 32px; width: 120px; height: 120px;
+  border-radius: 50%; background: rgba(255,255,255,.15); border: 2px solid rgba(255,255,255,.45);
+  pointer-events: auto; touch-action: none; transition: border-color .15s, box-shadow .15s;
+}
+#joy.sprint {
+  border-color: #ffd23f;
+  box-shadow: 0 0 18px rgba(255, 210, 63, .65);
+}
+#joy-tip {
+  position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
+  font-size: 11px; font-weight: 600; color: #ffd23f; background: rgba(0,0,0,.75);
+  padding: 2px 10px; border-radius: 999px; opacity: 0; pointer-events: none;
+  transition: opacity .15s; white-space: nowrap; border: 1px solid rgba(255,210,63,.4);
+}
+#joy.sprint #joy-tip { opacity: 1; }
+#knob {
+  position: absolute; left: 36px; top: 36px; width: 48px; height: 48px;
+  border-radius: 50%; background: rgba(255,255,255,.88); pointer-events: none;
+  box-shadow: 0 4px 8px rgba(0,0,0,.3); transition: background .15s, box-shadow .15s;
+}
+#knob.sprint {
+  background: linear-gradient(135deg, #ffd23f, #ff4081);
+  box-shadow: 0 0 14px #ff4081;
+}
+#tCollect {
+  position: absolute; right: 28px; bottom: 38px; width: 80px; height: 80px;
+  border-radius: 50%; border: 3px solid #fff; background: #ffd23f; font-size: 17px;
+  font-weight: 600; color: #6a3500; box-shadow: 0 6px 14px rgba(0,0,0,.35);
+  pointer-events: auto; touch-action: none;
+}
+#tCollect:active { transform: scale(.92); }
 </style>
 </head>
 <body>
+
 <canvas id="game"></canvas>
 
 <div id="splash" class="screen active bgfun">
@@ -106,7 +213,7 @@ h1{font-size:clamp(24px,4vw,38px);line-height:1.2;text-align:center;text-shadow:
   <div class="sub">เลือกโลกที่อยากผจญภัย แล้วตามหาของเป้าหมายให้ได้มากที่สุดใน 3 นาที!</div>
   <div id="allBest"></div>
   <div class="themes" id="themeList"></div>
-  <div class="howto">🎯 เก็บเป้าหมาย <b>+100</b> · ผิด <b>−100</b> &nbsp;|&nbsp; ⌨️ W/S/A/D เดิน · Shift วิ่ง · E/Space เก็บ · M แผนที่ · หมุนเมาส์ปรับมุมมอง</div>
+  <div class="howto">🎯 เก็บเป้าหมาย <b>+100</b> · ผิด <b>−100</b> &nbsp;|&nbsp; 🕹️ ดึงปุ่มเดินสุดขอบเพื่อวิ่งสปีด · E/Space เก็บ · M แผนที่</div>
 </div>
 
 <div id="charSelect" class="screen bgfun">
@@ -138,24 +245,24 @@ h1{font-size:clamp(24px,4vw,38px);line-height:1.2;text-align:center;text-shadow:
     <div class="panel"><div class="lbl">⭐ คะแนน</div><div class="val" id="score">0</div></div>
     <div class="panel"><div class="lbl">กระเป๋า</div><div class="val"><span id="bagIcon">🎒</span> <span class="ok">✔<span id="goodCnt">0</span></span> <span class="no">✘<span id="badCnt">0</span></span></div></div>
   </div>
-
   <div class="top-right-box">
     <div id="zoneName" class="panel"></div>
     <button id="btnMapIcon" title="เปิดแผนที่ (M)">🗺️</button>
   </div>
-
   <div id="prompt" class="panel"></div>
-  <div id="help" class="panel">W/S/A/D เดินตามมุมกล้อง · Shift วิ่ง · E/Space เก็บ · M แผนที่ · Scroll เมาส์ซูม</div>
-
+  <div id="help" class="panel">W/S/A/D เดินตามมุมกล้อง · Shift วิ่ง (จอยสติ๊กลากสุดขอบ) · E/Space เก็บ · M แผนที่</div>
   <div id="touch">
-    <div id="joy"><div id="knob"></div></div>
+    <div id="joy">
+      <div id="joy-tip">⚡ กำลังวิ่ง!</div>
+      <div id="knob"></div>
+    </div>
     <button id="tCollect">เก็บ!</button>
   </div>
 </div>
 
 <div id="bigmap">
   <canvas id="bigCanvas" width="540" height="540"></canvas>
-  <div style="font-size:13px;color:#fff;background:rgba(0,0,0,.5);padding:4px 12px;border-radius:20px">🔺 สีชมพู = ตำแหน่งคุณ · กด M หรือแตะที่ใดก็ได้เพื่อปิด</div>
+  <div class="map-hint">🧭 ลูกศรสีชมพู = ตำแหน่งและทิศทางของคุณ · แตะที่ใดก็ได้เพื่อปิด</div>
 </div>
 
 <div id="endScreen" class="screen">
@@ -230,14 +337,17 @@ const SPECIES = [
 
 const spById = id => SPECIES.find(s => s.id === id) || SPECIES[0];
 const $ = id => document.getElementById(id);
-const rand = (a,b) => a + Math.random()*(b-a);
-const pick = a => a[Math.floor(Math.random()*a.length)];
-const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
-const mtof = m => 440*Math.pow(2,(m-69)/12);
-const NOTE = {C:0,D:2,E:4,F:5,G:7,A:9,B:11};
-const notes = s => s.trim().split(/\s+/).map(t => { if (t==='.') return 0; const m=t.match(/^([A-G])(#|b)?(\d)$/); return 12*(+m[3]+1)+NOTE[m[1]]+(m[2]==='#'?1:m[2]==='b'?-1:0); });
-const triad = (r,minor) => [r, r+(minor?3:4), r+7];
-
+const rand = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+const NOTE = {C:0, D:2, E:4, F:5, G:7, A:9, B:11};
+const notes = s => s.trim().split(/\s+/).map(t => {
+  if (t === '.') return 0;
+  const m = t.match(/^([A-G])(#|b)?(\d)$/);
+  return 12 * (+m[3] + 1) + NOTE[m[1]] + (m[2] === '#' ? 1 : m[2] === 'b' ? -1 : 0);
+});
+const triad = (r, minor) => [r, r + (minor ? 3 : 4), r + 7];
 const shuffle = a => {
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -245,7 +355,6 @@ const shuffle = a => {
   }
   return a;
 };
-
 function lerpAngle(from, to, t) {
   let diff = (to - from) % (Math.PI * 2);
   if (diff < -Math.PI) diff += Math.PI * 2;
@@ -257,67 +366,109 @@ function lerpAngle(from, to, t) {
    2) ระบบเสียง Web Audio API (สังเคราะห์เสียงทั้งหมด)
    ========================================================= */
 const A = {
-  ctx:null, song:null, songKey:null, step:0, next:0, muted:false,
-  init(){
-    if (this.ctx){ if (this.ctx.state==='suspended') this.ctx.resume(); return; }
-    const c = this.ctx = new (window.AudioContext||window.webkitAudioContext)();
-    this.master=c.createGain(); this.master.gain.value=.8; this.master.connect(c.destination);
-    this.music=c.createGain(); this.music.gain.value=.35; this.music.connect(this.master);
-    this.sfx=c.createGain(); this.sfx.gain.value=.85; this.sfx.connect(this.master);
-    this.delay=c.createDelay(1.5); this.fb=c.createGain(); this.wet=c.createGain();
+  ctx: null, song: null, songKey: null, step: 0, next: 0, muted: false,
+  init() {
+    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    const c = this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    this.master = c.createGain(); this.master.gain.value = .8; this.master.connect(c.destination);
+    this.music = c.createGain(); this.music.gain.value = .35; this.music.connect(this.master);
+    this.sfx = c.createGain(); this.sfx.gain.value = .85; this.sfx.connect(this.master);
+    this.delay = c.createDelay(1.5); this.fb = c.createGain(); this.wet = c.createGain();
     this.delay.connect(this.fb); this.fb.connect(this.delay); this.delay.connect(this.wet); this.wet.connect(this.music);
-    this.nb=c.createBuffer(1,c.sampleRate,c.sampleRate); const d=this.nb.getChannelData(0); for(let i=0;i<d.length;i++) d[i]=Math.random()*2-1;
-    setInterval(()=>this.sched(),25);
+    this.nb = c.createBuffer(1, c.sampleRate, c.sampleRate);
+    const d = this.nb.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    setInterval(() => this.sched(), 25);
   },
-  tone(m,t,dur,o={}){
-    if(!this.ctx) return; const c=this.ctx; const {wave='sine',gain=.2,attack=.01,bus=this.music,send=0,cutoff=0,slide=null,vib=0}=o;
-    const osc=c.createOscillator(); osc.type=wave; osc.frequency.setValueAtTime(mtof(m),t);
-    if (slide!==null) osc.frequency.exponentialRampToValueAtTime(mtof(slide),t+attack+dur);
-    const g=c.createGain(); g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(gain,t+attack); g.gain.exponentialRampToValueAtTime(.0001,t+attack+dur);
-    let n=osc; if (cutoff){ const f=c.createBiquadFilter(); f.type='lowpass'; f.frequency.value=cutoff; osc.connect(f); n=f; }
+  tone(m, t, dur, o = {}) {
+    if (!this.ctx) return; const c = this.ctx;
+    const {wave = 'sine', gain = .2, attack = .01, bus = this.music, send = 0, cutoff = 0, slide = null, vib = 0} = o;
+    const osc = c.createOscillator(); osc.type = wave; osc.frequency.setValueAtTime(mtof(m), t);
+    if (slide !== null) osc.frequency.exponentialRampToValueAtTime(mtof(slide), t + attack + dur);
+    const g = c.createGain(); g.gain.setValueAtTime(.0001, t);
+    g.gain.linearRampToValueAtTime(gain, t + attack);
+    g.gain.exponentialRampToValueAtTime(.0001, t + attack + dur);
+    let n = osc;
+    if (cutoff) {
+      const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = cutoff;
+      osc.connect(f); n = f;
+    }
     n.connect(g); g.connect(bus);
-    if (send){ const s=c.createGain(); s.gain.value=send; g.connect(s); s.connect(this.delay); }
-    if (vib){ const l=c.createOscillator(), lg=c.createGain(); l.frequency.value=5.5; lg.gain.value=vib; l.connect(lg); lg.connect(osc.detune); l.start(t); l.stop(t+attack+dur+.05); }
-    osc.start(t); osc.stop(t+attack+dur+.05);
+    if (send) { const s = c.createGain(); s.gain.value = send; g.connect(s); s.connect(this.delay); }
+    if (vib) {
+      const l = c.createOscillator(), lg = c.createGain();
+      l.frequency.value = 5.5; lg.gain.value = vib;
+      l.connect(lg); lg.connect(osc.detune);
+      l.start(t); l.stop(t + attack + dur + .05);
+    }
+    osc.start(t); osc.stop(t + attack + dur + .05);
   },
-  noise(t,dur,o={}){
-    if(!this.ctx) return; const c=this.ctx; const {gain=.1,hp=5000,bus=this.music}=o;
-    const s=c.createBufferSource(); s.buffer=this.nb; const f=c.createBiquadFilter(); f.type='highpass'; f.frequency.value=hp;
-    const g=c.createGain(); g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(.0001,t+dur);
-    s.connect(f); f.connect(g); g.connect(bus); s.start(t,Math.random()*.5); s.stop(t+dur+.02);
+  noise(t, dur, o = {}) {
+    if (!this.ctx) return; const c = this.ctx; const {gain = .1, hp = 5000, bus = this.music} = o;
+    const s = c.createBufferSource(); s.buffer = this.nb;
+    const f = c.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp;
+    const g = c.createGain(); g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+    s.connect(f); f.connect(g); g.connect(bus); s.start(t, Math.random() * .5); s.stop(t + dur + .02);
   },
-  kick(t,gain=.4,f0=150){
-    if(!this.ctx) return; const c=this.ctx,o=c.createOscillator(),g=c.createGain();
-    o.frequency.setValueAtTime(f0,t); o.frequency.exponentialRampToValueAtTime(40,t+.14);
-    g.gain.setValueAtTime(gain,t); g.gain.exponentialRampToValueAtTime(.0001,t+.2);
-    o.connect(g); g.connect(this.music); o.start(t); o.stop(t+.22);
+  kick(t, gain = .4, f0 = 150) {
+    if (!this.ctx) return; const c = this.ctx, o = c.createOscillator(), g = c.createGain();
+    o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(40, t + .14);
+    g.gain.setValueAtTime(gain, t); g.gain.exponentialRampToValueAtTime(.0001, t + .2);
+    o.connect(g); g.connect(this.music); o.start(t); o.stop(t + .22);
   },
-  bubble(t,gain=.06,bus){
-    if(!this.ctx) return; const c=this.ctx,o=c.createOscillator(),g=c.createGain(); const f=rand(350,900), d=rand(.05,.11);
-    o.type='sine'; o.frequency.setValueAtTime(f,t); o.frequency.exponentialRampToValueAtTime(f*rand(2,3),t+d);
-    g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(gain,t+.01); g.gain.exponentialRampToValueAtTime(.0001,t+d);
-    o.connect(g); g.connect(bus||this.music); o.start(t); o.stop(t+d+.02);
+  bubble(t, gain = .06, bus) {
+    if (!this.ctx) return; const c = this.ctx, o = c.createOscillator(), g = c.createGain();
+    const f = rand(350, 900), d = rand(.05, .11);
+    o.type = 'sine'; o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * rand(2, 3), t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.linearRampToValueAtTime(gain, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(bus || this.music); o.start(t); o.stop(t + d + .02);
   },
-  play(key){
-    if (!this.ctx || this.songKey===key) return;
-    this.songKey=key; this.song=SONGS[key];
-    const [dt,fb,wet]=this.song.delay, now=this.ctx.currentTime;
-    this.delay.delayTime.setValueAtTime(dt,now); this.fb.gain.setValueAtTime(fb,now); this.wet.gain.setValueAtTime(wet,now);
-    this.music.gain.cancelScheduledValues(now); this.music.gain.setValueAtTime(0,now); this.music.gain.linearRampToValueAtTime(.35,now+1);
-    this.step=0; this.next=now+.15;
+  play(key) {
+    if (!this.ctx || this.songKey === key) return;
+    this.songKey = key; this.song = SONGS[key];
+    const [dt, fb, wet] = this.song.delay, now = this.ctx.currentTime;
+    this.delay.delayTime.setValueAtTime(dt, now); this.fb.gain.setValueAtTime(fb, now); this.wet.gain.setValueAtTime(wet, now);
+    this.music.gain.cancelScheduledValues(now); this.music.gain.setValueAtTime(0, now); this.music.gain.linearRampToValueAtTime(.35, now + 1);
+    this.step = 0; this.next = now + .15;
   },
-  sched(){
-    if (!this.song || !this.ctx) return; const c=this.ctx, sd=60/this.song.bpm/2;
-    if (this.next<c.currentTime) this.next=c.currentTime+.05;
-    while (this.next<c.currentTime+.15){ this.song.tick(this.step,this.next,sd); this.next+=sd; this.step++; }
+  sched() {
+    if (!this.song || !this.ctx) return; const c = this.ctx, sd = 60 / this.song.bpm / 2;
+    if (this.next < c.currentTime) this.next = c.currentTime + .05;
+    while (this.next < c.currentTime + .15) { this.song.tick(this.step, this.next, sd); this.next += sd; this.step++; }
   },
-  good(){ if(!this.ctx)return; const t=this.ctx.currentTime; [84,88,91,96].forEach((m,i)=>this.tone(m,t+i*.06,.18,{wave:'triangle',gain:.25,bus:this.sfx})); this.tone(103,t+.26,.5,{wave:'sine',gain:.12,bus:this.sfx}); },
-  bad(){ if(!this.ctx)return; const t=this.ctx.currentTime; this.tone(55,t,.4,{wave:'sawtooth',gain:.18,cutoff:1200,slide:43,bus:this.sfx}); this.tone(56,t,.4,{wave:'square',gain:.09,cutoff:800,slide:44,bus:this.sfx}); },
-  bag(){ if(!this.ctx)return; const t=this.ctx.currentTime; this.noise(t,.18,{gain:.14,hp:2500,bus:this.sfx}); this.tone(70,t+.13,.08,{wave:'sine',gain:.3,slide:58,bus:this.sfx}); },
-  click(){ if(!this.ctx)return; const t=this.ctx.currentTime; this.tone(84,t,.06,{wave:'triangle',gain:.15,bus:this.sfx}); this.tone(91,t+.05,.08,{wave:'triangle',gain:.12,bus:this.sfx}); },
-  tick(){ if(!this.ctx)return; this.tone(96,this.ctx.currentTime,.04,{wave:'square',gain:.05,bus:this.sfx}); },
-  fanfare(){ if(!this.ctx)return; const t=this.ctx.currentTime; [72,76,79,84].forEach((m,i)=>this.tone(m,t+i*.14,i===3?.7:.12,{wave:'square',gain:.08,cutoff:3000,bus:this.sfx})); },
-  toggleMute(){ this.muted=!this.muted; if(this.master) this.master.gain.value=this.muted?0:.8; return this.muted; }
+  good() {
+    if (!this.ctx) return; const t = this.ctx.currentTime;
+    [84, 88, 91, 96].forEach((m, i) => this.tone(m, t + i * .06, .18, {wave: 'triangle', gain: .25, bus: this.sfx}));
+    this.tone(103, t + .26, .5, {wave: 'sine', gain: .12, bus: this.sfx});
+  },
+  bad() {
+    if (!this.ctx) return; const t = this.ctx.currentTime;
+    this.tone(55, t, .4, {wave: 'sawtooth', gain: .18, cutoff: 1200, slide: 43, bus: this.sfx});
+    this.tone(56, t, .4, {wave: 'square', gain: .09, cutoff: 800, slide: 44, bus: this.sfx});
+  },
+  bag() {
+    if (!this.ctx) return; const t = this.ctx.currentTime;
+    this.noise(t, .18, {gain: .14, hp: 2500, bus: this.sfx});
+    this.tone(70, t + .13, .08, {wave: 'sine', gain: .3, slide: 58, bus: this.sfx});
+  },
+  click() {
+    if (!this.ctx) return; const t = this.ctx.currentTime;
+    this.tone(84, t, .06, {wave: 'triangle', gain: .15, bus: this.sfx});
+    this.tone(91, t + .05, .08, {wave: 'triangle', gain: .12, bus: this.sfx});
+  },
+  tick() {
+    if (!this.ctx) return;
+    this.tone(96, this.ctx.currentTime, .04, {wave: 'square', gain: .05, bus: this.sfx});
+  },
+  fanfare() {
+    if (!this.ctx) return; const t = this.ctx.currentTime;
+    [72, 76, 79, 84].forEach((m, i) => this.tone(m, t + i * .14, i === 3 ? .7 : .12, {wave: 'square', gain: .08, cutoff: 3000, bus: this.sfx}));
+  },
+  toggleMute() {
+    this.muted = !this.muted;
+    if (this.master) this.master.gain.value = this.muted ? 0 : .8;
+    return this.muted;
+  }
 };
 
 const HOME_MEL  = notes('C5 E5 G5 E5 C5 E5 G5 .  A5 G5 E5 C5 D5 . . .  F5 E5 D5 C5 D5 E5 C5 A4  G4 C5 E5 D5 B4 . . .  E5 G5 C6 G5 A5 G5 E5 .  F5 A5 G5 F5 E5 . D5 .  B4 D5 G5 A5 G5 F5 D5 B4  C5 . G4 . C5 . . .');
@@ -327,65 +478,65 @@ const MAZE_MEL  = notes('D5 . . . . . F5 .  E5 . . . A4 . . .  D5 . . . . . F5 G
 const OCEAN_MEL = notes('A4 . C5 . F5 .  E5 . D5 . C5 .  D5 . F5 . Bb5 .  A5 . . . . .  F5 . E5 . D5 .  D5 . C5 . Bb4 .  G4 . C5 . E5 .  F5 . . . . .');
 
 const SONGS = {
-  home:{ bpm:138, delay:[.2,.2,.12], tick(s,t,d){
-    const st=s%64, bar=st>>3, b=st%8, ch=[[48,0],[45,1],[41,0],[43,0],[48,0],[41,0],[43,0],[48,0]][bar], m=HOME_MEL[st];
-    if (m){ A.tone(m,t,d*.8,{wave:'square',gain:.06,cutoff:2800}); A.tone(m+12,t,d*.4,{wave:'triangle',gain:.03}); }
-    if (b%2===0) A.tone(ch[0]+(b===2||b===6?7:0),t,d*.8,{wave:'triangle',gain:.22});
-    else triad(ch[0]+24,ch[1]).forEach(n=>A.tone(n,t,d*.4,{wave:'square',gain:.016,cutoff:1600}));
-    if (b%4===0) A.kick(t,.35);
-    if (b%4===2) A.noise(t,.08,{gain:.08,hp:1800});
-    A.noise(t,.025,{gain:.025,hp:8000});
+  home: { bpm: 138, delay: [.2, .2, .12], tick(s, t, d) {
+    const st = s % 64, bar = st >> 3, b = st % 8, ch = [[48, 0], [45, 1], [41, 0], [43, 0], [48, 0], [41, 0], [43, 0], [48, 0]][bar], m = HOME_MEL[st];
+    if (m) { A.tone(m, t, d * .8, {wave: 'square', gain: .06, cutoff: 2800}); A.tone(m + 12, t, d * .4, {wave: 'triangle', gain: .03}); }
+    if (b % 2 === 0) A.tone(ch[0] + (b === 2 || b === 6 ? 7 : 0), t, d * .8, {wave: 'triangle', gain: .22});
+    else triad(ch[0] + 24, ch[1]).forEach(n => A.tone(n, t, d * .4, {wave: 'square', gain: .016, cutoff: 1600}));
+    if (b % 4 === 0) A.kick(t, .35);
+    if (b % 4 === 2) A.noise(t, .08, {gain: .08, hp: 1800});
+    A.noise(t, .025, {gain: .025, hp: 8000});
   }},
-  magic:{ bpm:92, delay:[.33,.38,.45], tick(s,t,d){
-    const st=s%48, bar=Math.floor(st/6), b=st%6, ch=[[52,1],[52,1],[48,0],[47,0],[45,1],[52,1],[47,0],[52,1]][bar], m=MAGIC_MEL[st];
-    if (m){ A.tone(m,t,d*2.2,{wave:'sine',gain:.13,attack:.005,send:.5}); A.tone(m+12,t,d*1.2,{wave:'sine',gain:.035,attack:.005,send:.5}); }
-    const tr=triad(ch[0],ch[1]), arp=[tr[0],tr[1],tr[2],tr[0]+12,tr[2],tr[1]];
-    A.tone(arp[b]+12,t,d*1.5,{wave:'triangle',gain:.035,send:.3});
-    if (b===0){ A.tone(ch[0]-12,t,d*5,{wave:'sine',gain:.2,attack:.02}); tr.forEach(n=>A.tone(n,t,d*5.5,{wave:'sawtooth',gain:.012,attack:.4,cutoff:900})); }
+  magic: { bpm: 92, delay: [.33, .38, .45], tick(s, t, d) {
+    const st = s % 48, bar = Math.floor(st / 6), b = st % 6, ch = [[52, 1], [52, 1], [48, 0], [47, 0], [45, 1], [52, 1], [47, 0], [52, 1]][bar], m = MAGIC_MEL[st];
+    if (m) { A.tone(m, t, d * 2.2, {wave: 'sine', gain: .13, attack: .005, send: .5}); A.tone(m + 12, t, d * 1.2, {wave: 'sine', gain: .035, attack: .005, send: .5}); }
+    const tr = triad(ch[0], ch[1]), arp = [tr[0], tr[1], tr[2], tr[0] + 12, tr[2], tr[1]];
+    A.tone(arp[b] + 12, t, d * 1.5, {wave: 'triangle', gain: .035, send: .3});
+    if (b === 0) { A.tone(ch[0] - 12, t, d * 5, {wave: 'sine', gain: .2, attack: .02}); tr.forEach(n => A.tone(n, t, d * 5.5, {wave: 'sawtooth', gain: .012, attack: .4, cutoff: 900})); }
   }},
-  snow:{ bpm:160, delay:[.19,.15,.12], tick(s,t,d){
-    const st=s%64, bar=st>>3, b=st%8, ch=[[43,0],[48,0],[50,0],[43,0],[40,1],[48,0],[50,0],[43,0]][bar], m=SNOW_MEL[st];
-    if (m){ A.tone(m,t,d*.7,{wave:'square',gain:.05,cutoff:3500}); A.tone(m+12,t,d*.3,{wave:'triangle',gain:.035,send:.2}); }
-    if (b%2===0) A.tone(ch[0]+(b%4===0?0:7),t,d*.8,{wave:'triangle',gain:.22});
-    else triad(ch[0]+24,ch[1]).forEach(n=>A.tone(n,t,d*.35,{wave:'square',gain:.014,cutoff:2000}));
-    A.noise(t,.06,{gain:b%2===0?.05:.03,hp:7500});
-    if (b===0||b===4) A.kick(t,.3);
-    if (b===2||b===6) A.noise(t,.09,{gain:.07,hp:2000});
+  snow: { bpm: 160, delay: [.19, .15, .12], tick(s, t, d) {
+    const st = s % 64, bar = st >> 3, b = st % 8, ch = [[43, 0], [48, 0], [50, 0], [43, 0], [40, 1], [48, 0], [50, 0], [43, 0]][bar], m = SNOW_MEL[st];
+    if (m) { A.tone(m, t, d * .7, {wave: 'square', gain: .05, cutoff: 3500}); A.tone(m + 12, t, d * .3, {wave: 'triangle', gain: .035, send: .2}); }
+    if (b % 2 === 0) A.tone(ch[0] + (b % 4 === 0 ? 0 : 7), t, d * .8, {wave: 'triangle', gain: .22});
+    else triad(ch[0] + 24, ch[1]).forEach(n => A.tone(n, t, d * .35, {wave: 'square', gain: .014, cutoff: 2000}));
+    A.noise(t, .06, {gain: b % 2 === 0 ? .05 : .03, hp: 7500});
+    if (b === 0 || b === 4) A.kick(t, .3);
+    if (b === 2 || b === 6) A.noise(t, .09, {gain: .07, hp: 2000});
   }},
-  maze:{ bpm:116, delay:[.39,.4,.35], tick(s,t,d){
-    const st=s%64, bar=st>>3, b=st%8, ch=[[38,1],[38,1],[34,0],[33,0],[38,1],[38,1],[34,0],[33,0]][bar], m=MAZE_MEL[st];
-    const ost=[0,0,12,0,7,0,12,1];
-    A.tone(ch[0]+ost[b],t,d*.7,{wave:'sawtooth',gain:.11,cutoff:520});
-    if (m) A.tone(m,t,d*3.5,{wave:'sine',gain:.1,attack:.05,send:.4,vib:18});
-    if (b===0) triad(ch[0]+24,ch[1]).forEach(n=>A.tone(n,t,d*7.5,{wave:'sawtooth',gain:.015,attack:.5,cutoff:700}));
-    if (b===0||b===3||b===6) A.kick(t,.3,95);
-    A.noise(t,.02,{gain:.018,hp:9000});
-    if (b===4) A.noise(t,.05,{gain:.05,hp:3000});
+  maze: { bpm: 116, delay: [.39, .4, .35], tick(s, t, d) {
+    const st = s % 64, bar = st >> 3, b = st % 8, ch = [[38, 1], [38, 1], [34, 0], [33, 0], [38, 1], [38, 1], [34, 0], [33, 0]][bar], m = MAZE_MEL[st];
+    const ost = [0, 0, 12, 0, 7, 0, 12, 1];
+    A.tone(ch[0] + ost[b], t, d * .7, {wave: 'sawtooth', gain: .11, cutoff: 520});
+    if (m) A.tone(m, t, d * 3.5, {wave: 'sine', gain: .1, attack: .05, send: .4, vib: 18});
+    if (b === 0) triad(ch[0] + 24, ch[1]).forEach(n => A.tone(n, t, d * 7.5, {wave: 'sawtooth', gain: .015, attack: .5, cutoff: 700}));
+    if (b === 0 || b === 3 || b === 6) A.kick(t, .3, 95);
+    A.noise(t, .02, {gain: .018, hp: 9000});
+    if (b === 4) A.noise(t, .05, {gain: .05, hp: 3000});
   }},
-  ocean:{ bpm:76, delay:[.4,.35,.4], tick(s,t,d){
-    const st=s%48, bar=Math.floor(st/6), b=st%6, ch=[[41,0],[48,0],[46,0],[41,0],[50,1],[46,0],[48,0],[41,0]][bar], m=OCEAN_MEL[st];
-    if (m){ A.tone(m,t,d*1.8,{wave:'sine',gain:.12,attack:.04,send:.5}); A.tone(m+12,t,d*.6,{wave:'triangle',gain:.03,send:.5}); }
-    if (b===0) A.tone(ch[0],t,d*5,{wave:'sine',gain:.2,attack:.05});
-    if (b===2||b===4) triad(ch[0]+12,ch[1]).forEach(n=>A.tone(n,t,d*1.5,{wave:'triangle',gain:.02,send:.3}));
-    if (Math.random()<.35) A.bubble(t+Math.random()*d,.05);
-    if (Math.random()<.08) for(let k=0;k<4;k++) A.bubble(t+k*.05,.04);
+  ocean: { bpm: 76, delay: [.4, .35, .4], tick(s, t, d) {
+    const st = s % 48, bar = Math.floor(st / 6), b = st % 6, ch = [[41, 0], [48, 0], [46, 0], [41, 0], [50, 1], [46, 0], [48, 0], [41, 0]][bar], m = OCEAN_MEL[st];
+    if (m) { A.tone(m, t, d * 1.8, {wave: 'sine', gain: .12, attack: .04, send: .5}); A.tone(m + 12, t, d * .6, {wave: 'triangle', gain: .03, send: .5}); }
+    if (b === 0) A.tone(ch[0], t, d * 5, {wave: 'sine', gain: .2, attack: .05});
+    if (b === 2 || b === 4) triad(ch[0] + 12, ch[1]).forEach(n => A.tone(n, t, d * 1.5, {wave: 'triangle', gain: .02, send: .3}));
+    if (Math.random() < .35) A.bubble(t + Math.random() * d, .05);
+    if (Math.random() < .08) for (let k = 0; k < 4; k++) A.bubble(t + k * .05, .04);
   }},
 };
 
 /* =========================================================
    3) Three.js พื้นฐาน & การจัดการความละเอียด Canvas
    ========================================================= */
-const renderer = new THREE.WebGLRenderer({canvas:$('game'), antialias:true});
+const renderer = new THREE.WebGLRenderer({canvas: $('game'), antialias: true});
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.outputColorSpace = THREE.SRGBColorSpace;
 
 const scene = new THREE.Scene();
-scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(),.04).texture;
-const camera = new THREE.PerspectiveCamera(55, innerWidth/innerHeight, .1, 250);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), .04).texture;
+const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, .1, 250);
 
-function handleResize(){
+function handleResize() {
   const w = window.innerWidth;
   const h = window.innerHeight;
   const pr = Math.min(window.devicePixelRatio || 1, 2);
@@ -393,7 +544,6 @@ function handleResize(){
   renderer.setSize(w, h, false);
   camera.aspect = w / h;
   camera.updateProjectionMatrix();
-
   if (prevRenderer) {
     prevRenderer.setPixelRatio(pr);
     prevRenderer.setSize(260, 320, false);
@@ -404,39 +554,39 @@ function handleResize(){
 window.addEventListener('resize', handleResize);
 
 const G = () => new THREE.Group();
-const Sph = (r,a=16,b=12) => new THREE.SphereGeometry(r,a,b);
-const Cyl = (rt,rb,h,s=16) => new THREE.CylinderGeometry(rt,rb,h,s);
-const Cone = (r,h,s=16) => new THREE.ConeGeometry(r,h,s);
-const Box = (x,y,z) => new THREE.BoxGeometry(x,y,z);
-const Tor = (r,t,rs=8,ts=20) => new THREE.TorusGeometry(r,t,rs,ts);
+const Sph = (r, a = 16, b = 12) => new THREE.SphereGeometry(r, a, b);
+const Cyl = (rt, rb, h, s = 16) => new THREE.CylinderGeometry(rt, rb, h, s);
+const Cone = (r, h, s = 16) => new THREE.ConeGeometry(r, h, s);
+const Box = (x, y, z) => new THREE.BoxGeometry(x, y, z);
+const Tor = (r, t, rs = 8, ts = 20) => new THREE.TorusGeometry(r, t, rs, ts);
 
-function M(color,o={}){
+function M(color, o = {}) {
   return new THREE.MeshStandardMaterial({
-    color, roughness:o.r??.55, metalness:o.m??.05,
-    emissive:o.e??0x000000, emissiveIntensity:o.ei??1,
-    transparent:o.t!==undefined, opacity:o.t??1,
-    side:o.ds?THREE.DoubleSide:THREE.FrontSide, flatShading:!!o.flat
+    color, roughness: o.r ?? .55, metalness: o.m ?? .05,
+    emissive: o.e ?? 0x000000, emissiveIntensity: o.ei ?? 1,
+    transparent: o.t !== undefined, opacity: o.t ?? 1,
+    side: o.ds ? THREE.DoubleSide : THREE.FrontSide, flatShading: !!o.flat
   });
 }
 
-function mesh(geo,mat,x=0,y=0,z=0,rx=0,ry=0,rz=0,s=1){
-  const m=new THREE.Mesh(geo,mat);
-  m.position.set(x,y,z); m.rotation.set(rx,ry,rz);
-  if(typeof s==='number') m.scale.set(s,s,s); else m.scale.copy(s);
-  m.castShadow=true; m.receiveShadow=true;
+function mesh(geo, mat, x = 0, y = 0, z = 0, rx = 0, ry = 0, rz = 0, s = 1) {
+  const m = new THREE.Mesh(geo, mat);
+  m.position.set(x, y, z); m.rotation.set(rx, ry, rz);
+  if (typeof s === 'number') m.scale.set(s, s, s); else m.scale.copy(s);
+  m.castShadow = true; m.receiveShadow = true;
   return m;
 }
 
 /* =========================================================
    4) การสร้างตัวละคร 3 มิติ และชุดตามธีม + เพศ
    ========================================================= */
-function buildCharacter(spec, themeKey, gender='female'){
+function buildCharacter(spec, themeKey, gender = 'female') {
   const g = G();
-  const cBody = M(spec.body, {r:.6});
-  const cBelly = M(spec.belly||0xffffff, {r:.65});
-  const cDark = M(0x222225, {r:.4});
-  const cPink = M(spec.ear||0xe89f9f, {r:.5});
-  const cEye = M(spec.eye||0x242426, {r:.2, m:.1});
+  const cBody = M(spec.body, {r: .6});
+  const cBelly = M(spec.belly || 0xffffff, {r: .65});
+  const cDark = M(0x222225, {r: .4});
+  const cPink = M(spec.ear || 0xe89f9f, {r: .5});
+  const cEye = M(spec.eye || 0x242426, {r: .2, m: .1});
 
   const torso = mesh(Sph(.7, 16, 14), cBody, 0, .85, 0);
   torso.scale.set(.9, 1.15, .8);
@@ -455,29 +605,29 @@ function buildCharacter(spec, themeKey, gender='female'){
   const nose = mesh(Sph(.07, 8, 8), cDark, 0, 1.76, .68);
   g.add(eyeL, eyeR, nose);
 
-  if(spec.type==='rabbit'){
+  if (spec.type === 'rabbit') {
     const earGeo = Cyl(.07, .12, .8, 8);
     const earL = mesh(earGeo, cBody, -.22, 2.5, .05, 0, 0, -.15);
     const earR = mesh(earGeo, cBody, .22, 2.5, .05, 0, 0, .15);
-    const inL = mesh(earGeo, cPink, -.22, 2.5, .07, 0, 0, -.15, new THREE.Vector3(.7,.9,.7));
-    const inR = mesh(earGeo, cPink, .22, 2.5, .07, 0, 0, .15, new THREE.Vector3(.7,.9,.7));
+    const inL = mesh(earGeo, cPink, -.22, 2.5, .07, 0, 0, -.15, new THREE.Vector3(.7, .9, .7));
+    const inR = mesh(earGeo, cPink, .22, 2.5, .07, 0, 0, .15, new THREE.Vector3(.7, .9, .7));
     g.add(earL, earR, inL, inR);
-  } else if(spec.folded){
+  } else if (spec.folded) {
     const earL = mesh(Cone(.16, .22, 8), cBody, -.32, 2.15, .1, .8, 0, -.7);
     const earR = mesh(Cone(.16, .22, 8), cBody, .32, 2.15, .1, .8, 0, .7);
     g.add(earL, earR);
   } else {
-    const isCat = spec.type==='cat';
+    const isCat = spec.type === 'cat';
     const earGeo = isCat ? Cone(.2, .35, 8) : Sph(.2, 10, 8);
     const earL = mesh(earGeo, cBody, -.34, 2.25, .05, 0, 0, -.25);
     const earR = mesh(earGeo, cBody, .34, 2.25, .05, 0, 0, .25);
     g.add(earL, earR);
   }
 
-  if(spec.type==='squirrel'){
+  if (spec.type === 'squirrel') {
     const tail = mesh(Tor(.55, .25, 8, 16), cBody, 0, 1.2, -.6, 0.4, 0, 0);
     g.add(tail);
-  } else if(spec.type==='rabbit' || spec.type==='hamster'){
+  } else if (spec.type === 'rabbit' || spec.type === 'hamster') {
     const tail = mesh(Sph(.15, 8, 8), cBelly, 0, .55, -.65);
     g.add(tail);
   } else {
@@ -493,36 +643,36 @@ function buildCharacter(spec, themeKey, gender='female'){
   footR.scale.set(1, .6, 1.4);
   g.add(armL, armR, footL, footR);
 
-  const accent = gender==='female' ? 0xff4fa0 : 0x3f72af;
-  if(themeKey==='magic'){
-    const robeMat = M(gender==='female'?0x4a1c6d:0x22204c, {r:.6});
+  const accent = gender === 'female' ? 0xff4fa0 : 0x3f72af;
+  if (themeKey === 'magic') {
+    const robeMat = M(gender === 'female' ? 0x4a1c6d : 0x22204c, {r: .6});
     const robe = mesh(Cone(.85, 1.2, 14, true), robeMat, 0, .75, 0);
     const hatRim = mesh(Cyl(.8, .85, .05, 16), robeMat, 0, 2.3, .05);
     const hatCone = mesh(Cone(.5, 1.1, 14), robeMat, 0, 2.85, -.02, -.1, 0, .05);
-    const band = mesh(Cyl(.53, .53, .12, 16), M(accent,{e:accent,ei:.3}), 0, 2.38, .05);
+    const band = mesh(Cyl(.53, .53, .12, 16), M(accent, {e: accent, ei: .3}), 0, 2.38, .05);
     g.add(robe, hatRim, hatCone, band);
-  } else if(themeKey==='snow'){
-    const coatMat = M(gender==='female'?0xd85b88:0x39739d, {r:.8});
-    const furMat = M(0xfafafa, {r:.9});
+  } else if (themeKey === 'snow') {
+    const coatMat = M(gender === 'female' ? 0xd85b88 : 0x39739d, {r: .8});
+    const furMat = M(0xfafafa, {r: .9});
     const coat = mesh(Cyl(.68, .75, .95, 12), coatMat, 0, .85, 0);
-    const collar = mesh(Tor(.45, .15, 8, 14), furMat, 0, 1.35, 0, Math.PI/2);
+    const collar = mesh(Tor(.45, .15, 8, 14), furMat, 0, 1.35, 0, Math.PI / 2);
     const beanie = mesh(Sph(.58, 12, 10), coatMat, 0, 2.25, .05);
     const pompom = mesh(Sph(.18, 8, 8), furMat, 0, 2.85, .05);
     g.add(coat, collar, beanie, pompom);
-  } else if(themeKey==='maze'){
-    const vestMat = M(gender==='female'?0x8c6d46:0x556b2f, {r:.7});
+  } else if (themeKey === 'maze') {
+    const vestMat = M(gender === 'female' ? 0x8c6d46 : 0x556b2f, {r: .7});
     const vest = mesh(Box(1.1, .8, .9), vestMat, 0, .85, 0);
-    const backpack = mesh(Box(.6, .7, .4), M(0x422d1c,{r:.7}), 0, .9, -.65);
+    const backpack = mesh(Box(.6, .7, .4), M(0x422d1c, {r: .7}), 0, .9, -.65);
     const hatBrim = mesh(Cyl(.85, .85, .04, 16), vestMat, 0, 2.3, .05);
     const hatTop = mesh(Cyl(.5, .55, .35, 14), vestMat, 0, 2.48, .05);
     g.add(vest, backpack, hatBrim, hatTop);
-  } else if(themeKey==='ocean'){
-    const suitMat = M(gender==='female'?0x008080:0x1b4965, {r:.3, m:.2});
-    const finMat = M(0xffcc00, {r:.4});
-    const maskMat = M(0x111111, {r:.2});
-    const glassMat = M(0x88e1ff, {r:.1, m:.4, t:.45});
+  } else if (themeKey === 'ocean') {
+    const suitMat = M(gender === 'female' ? 0x008080 : 0x1b4965, {r: .3, m: .2});
+    const finMat = M(0xffcc00, {r: .4});
+    const maskMat = M(0x111111, {r: .2});
+    const glassMat = M(0x88e1ff, {r: .1, m: .4, t: .45});
     const suit = mesh(Cyl(.65, .7, .95, 14), suitMat, 0, .85, 0);
-    const tank = mesh(Cyl(.16, .16, .9, 10), M(0xdedede,{m:.6}), 0, .95, -.62);
+    const tank = mesh(Cyl(.16, .16, .9, 10), M(0xdedede, {m: .6}), 0, .95, -.62);
     const mask = mesh(Box(.6, .3, .22), maskMat, 0, 1.85, .55);
     const glass = mesh(Box(.52, .22, .05), glassMat, 0, 1.85, .66);
     const finL = mesh(Box(.32, .06, .65), finMat, -.3, .08, .3);
@@ -535,96 +685,96 @@ function buildCharacter(spec, themeKey, gender='female'){
 /* =========================================================
    5) การสร้างโมเดลไอเทม 3 มิติ (ครบ 20 ชนิด)
    ========================================================= */
-function createItemMesh(id){
+function createItemMesh(id) {
   const g = G();
-  if(id==='potion'){
-    const bottle = mesh(Cyl(.15, .35, .7, 12), M(0xff4081,{r:.2,t:.65,e:0xff4081,ei:.3}), 0, .35, 0);
-    const neck = mesh(Cyl(.1, .1, .25, 10), M(0xffffff,{r:.2,t:.7}), 0, .75, 0);
+  if (id === 'potion') {
+    const bottle = mesh(Cyl(.15, .35, .7, 12), M(0xff4081, {r: .2, t: .65, e: 0xff4081, ei: .3}), 0, .35, 0);
+    const neck = mesh(Cyl(.1, .1, .25, 10), M(0xffffff, {r: .2, t: .7}), 0, .75, 0);
     const cork = mesh(Cyl(.09, .08, .15, 8), M(0x8b5a2b), 0, .9, 0);
     g.add(bottle, neck, cork);
-  } else if(id==='book'){
-    const cover = mesh(Box(.75, .2, .95), M(0x801313,{r:.6}), 0, .15, 0);
-    const pages = mesh(Box(.68, .14, .88), M(0xf8f4e6,{r:.8}), .02, .15, 0);
+  } else if (id === 'book') {
+    const cover = mesh(Box(.75, .2, .95), M(0x801313, {r: .6}), 0, .15, 0);
+    const pages = mesh(Box(.68, .14, .88), M(0xf8f4e6, {r: .8}), .02, .15, 0);
     g.add(cover, pages);
-  } else if(id==='wand'){
+  } else if (id === 'wand') {
     const stick = mesh(Cyl(.03, .06, 1.2, 8), M(0x4a2e18), 0, .6, 0);
-    const star = mesh(Sph(.18, 10, 8), M(0xffeb3b,{e:0xffeb3b,ei:.8}), 0, 1.25, 0);
+    const star = mesh(Sph(.18, 10, 8), M(0xffeb3b, {e: 0xffeb3b, ei: .8}), 0, 1.25, 0);
     g.add(stick, star);
-  } else if(id==='crystal'){
-    const ball = mesh(Sph(.4, 16, 14), M(0xa855f7,{r:.1,t:.75,e:0xa855f7,ei:.5}), 0, .65, 0);
-    const base = mesh(Cyl(.35, .45, .3, 10), M(0xd4af37,{m:.7,r:.3}), 0, .15, 0);
+  } else if (id === 'crystal') {
+    const ball = mesh(Sph(.4, 16, 14), M(0xa855f7, {r: .1, t: .75, e: 0xa855f7, ei: .5}), 0, .65, 0);
+    const base = mesh(Cyl(.35, .45, .3, 10), M(0xd4af37, {m: .7, r: .3}), 0, .15, 0);
     g.add(ball, base);
-  } else if(id==='key'){
-    const loop = mesh(Tor(.2, .05, 8, 16), M(0xffd700,{m:.8,r:.25}), 0, .7, 0);
-    const shaft = mesh(Cyl(.04, .04, .6, 8), M(0xffd700,{m:.8,r:.25}), 0, .3, 0);
-    const bit = mesh(Box(.15, .1, .05), M(0xffd700,{m:.8,r:.25}), .08, .1, 0);
+  } else if (id === 'key') {
+    const loop = mesh(Tor(.2, .05, 8, 16), M(0xffd700, {m: .8, r: .25}), 0, .7, 0);
+    const shaft = mesh(Cyl(.04, .04, .6, 8), M(0xffd700, {m: .8, r: .25}), 0, .3, 0);
+    const bit = mesh(Box(.15, .1, .05), M(0xffd700, {m: .8, r: .25}), .08, .1, 0);
     g.add(loop, shaft, bit);
-  } else if(id==='gift'){
-    const box = mesh(Box(.7, .7, .7), M(0xd32f2f,{r:.5}), 0, .35, 0);
-    const ribbon1 = mesh(Box(.72, .72, .12), M(0xffd700,{r:.3}), 0, .35, 0);
-    const ribbon2 = mesh(Box(.12, .72, .72), M(0xffd700,{r:.3}), 0, .35, 0);
+  } else if (id === 'gift') {
+    const box = mesh(Box(.7, .7, .7), M(0xd32f2f, {r: .5}), 0, .35, 0);
+    const ribbon1 = mesh(Box(.72, .72, .12), M(0xffd700, {r: .3}), 0, .35, 0);
+    const ribbon2 = mesh(Box(.12, .72, .72), M(0xffd700, {r: .3}), 0, .35, 0);
     g.add(box, ribbon1, ribbon2);
-  } else if(id==='snowman'){
-    const b1 = mesh(Sph(.4, 12, 10), M(0xffffff,{r:.8}), 0, .35, 0);
-    const b2 = mesh(Sph(.28, 12, 10), M(0xffffff,{r:.8}), 0, .85, 0);
-    const nose = mesh(Cone(.06, .25, 6), M(0xff6d00), 0, .85, .3, Math.PI/2, 0, 0);
+  } else if (id === 'snowman') {
+    const b1 = mesh(Sph(.4, 12, 10), M(0xffffff, {r: .8}), 0, .35, 0);
+    const b2 = mesh(Sph(.28, 12, 10), M(0xffffff, {r: .8}), 0, .85, 0);
+    const nose = mesh(Cone(.06, .25, 6), M(0xff6d00), 0, .85, .3, Math.PI / 2, 0, 0);
     g.add(b1, b2, nose);
-  } else if(id==='bell'){
-    const bell = mesh(Cone(.38, .55, 12), M(0xffd700,{m:.8,r:.2}), 0, .45, 0);
-    const clapper = mesh(Sph(.1, 8, 8), M(0xffd700,{m:.8,r:.2}), 0, .15, 0);
+  } else if (id === 'bell') {
+    const bell = mesh(Cone(.38, .55, 12), M(0xffd700, {m: .8, r: .2}), 0, .45, 0);
+    const clapper = mesh(Sph(.1, 8, 8), M(0xffd700, {m: .8, r: .2}), 0, .15, 0);
     g.add(bell, clapper);
-  } else if(id==='sock'){
-    const leg = mesh(Cyl(.16, .16, .6, 10), M(0xd32f2f,{r:.7}), 0, .5, 0);
-    const foot = mesh(Box(.32, .18, .4), M(0xd32f2f,{r:.7}), 0, .15, .12);
-    const top = mesh(Tor(.17, .06, 6, 12), M(0xffffff,{r:.9}), 0, .8, 0, Math.PI/2);
+  } else if (id === 'sock') {
+    const leg = mesh(Cyl(.16, .16, .6, 10), M(0xd32f2f, {r: .7}), 0, .5, 0);
+    const foot = mesh(Box(.32, .18, .4), M(0xd32f2f, {r: .7}), 0, .15, .12);
+    const top = mesh(Tor(.17, .06, 6, 12), M(0xffffff, {r: .9}), 0, .8, 0, Math.PI / 2);
     g.add(leg, foot, top);
-  } else if(id==='candy'){
+  } else if (id === 'candy') {
     const cane = mesh(Tor(.2, .06, 8, 16, Math.PI), M(0xffffff), 0, .85, 0);
     const stick = mesh(Cyl(.06, .06, .7, 8), M(0xd32f2f), -.2, .45, 0);
     g.add(cane, stick);
-  } else if(id==='compass'){
-    const body = mesh(Cyl(.38, .38, .12, 16), M(0xb8860b,{m:.8,r:.3}), 0, .1, 0);
+  } else if (id === 'compass') {
+    const body = mesh(Cyl(.38, .38, .12, 16), M(0xb8860b, {m: .8, r: .3}), 0, .1, 0);
     const dial = mesh(Cyl(.34, .34, .02, 16), M(0xffffff), 0, .16, 0);
-    const needle = mesh(Cone(.07, .45, 4), M(0xd32f2f), 0, .18, 0, Math.PI/2);
+    const needle = mesh(Cone(.07, .45, 4), M(0xd32f2f), 0, .18, 0, Math.PI / 2);
     g.add(body, dial, needle);
-  } else if(id==='scroll'){
-    const roll = mesh(Cyl(.12, .12, .8, 12), M(0xf5e6cb,{r:.7}), 0, .4, 0, 0, 0, Math.PI/2);
-    const ribbon = mesh(Cyl(.13, .13, .1, 12), M(0x9c27b0), 0, .4, 0, 0, 0, Math.PI/2);
+  } else if (id === 'scroll') {
+    const roll = mesh(Cyl(.12, .12, .8, 12), M(0xf5e6cb, {r: .7}), 0, .4, 0, 0, 0, Math.PI / 2);
+    const ribbon = mesh(Cyl(.13, .13, .1, 12), M(0x9c27b0), 0, .4, 0, 0, 0, Math.PI / 2);
     g.add(roll, ribbon);
-  } else if(id==='flower'){
+  } else if (id === 'flower') {
     const pot = mesh(Cone(.3, .45, 10), M(0x8d5b4c), 0, .25, 0, Math.PI);
     const stem = mesh(Cyl(.03, .03, .5, 6), M(0x4caf50), 0, .5, 0);
-    const blossom = mesh(Sph(.2, 8, 8), M(0xff4081,{e:0xff4081,ei:.3}), 0, .75, 0);
+    const blossom = mesh(Sph(.2, 8, 8), M(0xff4081, {e: 0xff4081, ei: .3}), 0, .75, 0);
     g.add(pot, stem, blossom);
-  } else if(id==='lantern'){
-    const body = mesh(Cyl(.22, .22, .5, 8), M(0xff9800,{e:0xff9800,ei:.8,t:.8}), 0, .4, 0);
+  } else if (id === 'lantern') {
+    const body = mesh(Cyl(.22, .22, .5, 8), M(0xff9800, {e: 0xff9800, ei: .8, t: .8}), 0, .4, 0);
     const cap = mesh(Cone(.32, .2, 8), M(0x212121), 0, .7, 0);
     g.add(body, cap);
-  } else if(id==='mushroom'){
+  } else if (id === 'mushroom') {
     const stem = mesh(Cyl(.12, .18, .4, 8), M(0xf5f5f5), 0, .2, 0);
-    const cap = mesh(Sph(.36, 12, 10), M(0xe53935,{r:.4}), 0, .45, 0);
+    const cap = mesh(Sph(.36, 12, 10), M(0xe53935, {r: .4}), 0, .45, 0);
     cap.scale.set(1, .65, 1);
     g.add(stem, cap);
-  } else if(id==='shell'){
-    const shell = mesh(Cone(.3, .7, 8), M(0xffb74d,{r:.5}), 0, .35, 0, -Math.PI/3);
+  } else if (id === 'shell') {
+    const shell = mesh(Cone(.3, .7, 8), M(0xffb74d, {r: .5}), 0, .35, 0, -Math.PI / 3);
     g.add(shell);
-  } else if(id==='pearl'){
-    const shellB = mesh(Sph(.4, 12, 8), M(0x37474f,{r:.4}), 0, .15, 0);
+  } else if (id === 'pearl') {
+    const shellB = mesh(Sph(.4, 12, 8), M(0x37474f, {r: .4}), 0, .15, 0);
     shellB.scale.set(1, .3, 1);
-    const pearl = mesh(Sph(.2, 16, 14), M(0xffffff,{r:.1,m:.2,e:0xffffff,ei:.3}), 0, .25, 0);
+    const pearl = mesh(Sph(.2, 16, 14), M(0xffffff, {r: .1, m: .2, e: 0xffffff, ei: .3}), 0, .25, 0);
     g.add(shellB, pearl);
-  } else if(id==='starfish'){
-    for(let k=0;k<5;k++){
-      const arm = mesh(Cone(.12, .6, 6), M(0xff7043,{r:.6}), 0, .1, 0, Math.PI/2, 0, k*(Math.PI*2/5));
+  } else if (id === 'starfish') {
+    for (let k = 0; k < 5; k++) {
+      const arm = mesh(Cone(.12, .6, 6), M(0xff7043, {r: .6}), 0, .1, 0, Math.PI / 2, 0, k * (Math.PI * 2 / 5));
       arm.scale.set(1, .3, 1);
       g.add(arm);
     }
-  } else if(id==='chest'){
+  } else if (id === 'chest') {
     const base = mesh(Box(.7, .35, .5), M(0x5d4037), 0, .2, 0);
-    const lid = mesh(Cyl(.26, .26, .7, 10), M(0xd4af37,{m:.7}), 0, .4, 0, 0, 0, Math.PI/2);
+    const lid = mesh(Cyl(.26, .26, .7, 10), M(0xd4af37, {m: .7}), 0, .4, 0, 0, 0, Math.PI / 2);
     g.add(base, lid);
-  } else if(id==='coin'){
-    const coin = mesh(Cyl(.35, .35, .08, 16), M(0xffd700,{m:.9,r:.2,e:0xffb300,ei:.2}), 0, .35, 0, Math.PI/2);
+  } else if (id === 'coin') {
+    const coin = mesh(Cyl(.35, .35, .08, 16), M(0xffd700, {m: .9, r: .2, e: 0xffb300, ei: .2}), 0, .35, 0, Math.PI / 2);
     g.add(coin);
   }
   return g;
@@ -640,26 +790,27 @@ let itemSpawns = [];
 let activeItems = [];
 let playerMesh = null;
 
-function clearWorld(){
-  if (worldGroup){ scene.remove(worldGroup); worldGroup=null; }
-  if (playerMesh){ scene.remove(playerMesh); playerMesh=null; }
+function clearWorld() {
+  if (worldGroup) { scene.remove(worldGroup); worldGroup = null; }
+  if (playerMesh) { scene.remove(playerMesh); playerMesh = null; }
   colliders = [];
   zones = [];
   itemSpawns = [];
-  activeItems.forEach(it=>scene.remove(it.mesh));
+  activeItems.forEach(it => scene.remove(it.mesh));
   activeItems = [];
 }
 
-function buildThemeWorld(themeKey){
+function buildThemeWorld(themeKey) {
   clearWorld();
   worldGroup = G();
   const th = THEMES[themeKey];
   scene.fog = new THREE.FogExp2(th.fog, th.fogDen);
   renderer.setClearColor(th.fog);
 
-  const hemi = new THREE.HemisphereLight(0xffffff, 0x444455, themeKey==='magic'?0.4:0.9);
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x444455, themeKey === 'magic' ? 0.4 : 0.9);
   worldGroup.add(hemi);
-  const dirLight = new THREE.DirectionalLight(0xfff5e6, themeKey==='magic'?0.6:1.2);
+
+  const dirLight = new THREE.DirectionalLight(0xfff5e6, themeKey === 'magic' ? 0.6 : 1.2);
   dirLight.position.set(30, 45, 25);
   dirLight.castShadow = true;
   dirLight.shadow.mapSize.set(1024, 1024);
@@ -671,74 +822,75 @@ function buildThemeWorld(themeKey){
 
   const groundGeo = new THREE.PlaneGeometry(150, 150);
   let groundMat;
-  if (themeKey==='magic') groundMat = M(0x28232e,{r:.8});
-  else if (themeKey==='snow') groundMat = M(0xf0f6fa,{r:.9});
-  else if (themeKey==='maze') groundMat = M(0x356627,{r:.85});
-  else groundMat = M(0xc2aa74,{r:.7});
-  const ground = mesh(groundGeo, groundMat, 0, 0, 0, -Math.PI/2);
+  if (themeKey === 'magic') groundMat = M(0x28232e, {r: .8});
+  else if (themeKey === 'snow') groundMat = M(0xf0f6fa, {r: .9});
+  else if (themeKey === 'maze') groundMat = M(0x356627, {r: .85});
+  else groundMat = M(0xc2aa74, {r: .7});
+
+  const ground = mesh(groundGeo, groundMat, 0, 0, 0, -Math.PI / 2);
   ground.receiveShadow = true;
   worldGroup.add(ground);
 
   const boundR = 48;
-  const boundMat = M(0x222222, {r:.9});
+  const boundMat = M(0x222222, {r: .9});
   const walls = [
-    {x:0, z:-boundR, sx:96, sz:2}, {x:0, z:boundR, sx:96, sz:2},
-    {x:-boundR, z:0, sx:2, sz:96}, {x:boundR, z:0, sx:2, sz:96}
+    {x: 0, z: -boundR, sx: 96, sz: 2}, {x: 0, z: boundR, sx: 96, sz: 2},
+    {x: -boundR, z: 0, sx: 2, sz: 96}, {x: boundR, z: 0, sx: 2, sz: 96}
   ];
-  walls.forEach(w=>{
+  walls.forEach(w => {
     const m = mesh(Box(w.sx, 6, w.sz), boundMat, w.x, 3, w.z);
     worldGroup.add(m);
-    colliders.push({box:new THREE.Box3().setFromObject(m)});
+    colliders.push({box: new THREE.Box3().setFromObject(m)});
   });
 
-  if (themeKey==='magic'){
-    const wallMat = M(0x3f3647, {r:.8});
+  if (themeKey === 'magic') {
+    const wallMat = M(0x3f3647, {r: .8});
     const roomDefs = [
-      {name:'โถงทางเข้าใหญ่', x:0, z:0, r:10},
-      {name:'ห้องสมุดมนตรา', x:-24, z:-24, r:9},
-      {name:'ห้องปรุงยาวิเศษ', x:24, z:-24, r:9},
-      {name:'หอคอยดาราศาสตร์', x:24, z:24, r:9},
-      {name:'ห้องเก็บของโบราณ', x:-24, z:24, r:9},
-      {name:'ห้องโถงตะเกียงเวท', x:0, z:-32, r:8},
-      {name:'ทางเดินลับใต้ดิน', x:0, z:32, r:8}
+      {name: 'โถงทางเข้าใหญ่', x: 0, z: 0, r: 10},
+      {name: 'ห้องสมุดมนตรา', x: -24, z: -24, r: 9},
+      {name: 'ห้องปรุงยาวิเศษ', x: 24, z: -24, r: 9},
+      {name: 'หอคอยดาราศาสตร์', x: 24, z: 24, r: 9},
+      {name: 'ห้องเก็บของโบราณ', x: -24, z: 24, r: 9},
+      {name: 'ห้องโถงตะเกียงเวท', x: 0, z: -32, r: 8},
+      {name: 'ทางเดินลับใต้ดิน', x: 0, z: 32, r: 8}
     ];
     zones = roomDefs;
     const castleWalls = [
-      {x:-12, z:-14, sx:18, sz:2}, {x:12, z:-14, sx:18, sz:2},
-      {x:-12, z:14, sx:18, sz:2}, {x:12, z:14, sx:18, sz:2},
-      {x:-14, z:-26, sx:2, sz:22}, {x:14, z:-26, sx:2, sz:22},
-      {x:-14, z:26, sx:2, sz:22}, {x:14, z:26, sx:2, sz:22},
-      {x:-30, z:0, sx:18, sz:2}, {x:30, z:0, sx:18, sz:2}
+      {x: -12, z: -14, sx: 18, sz: 2}, {x: 12, z: -14, sx: 18, sz: 2},
+      {x: -12, z: 14, sx: 18, sz: 2}, {x: 12, z: 14, sx: 18, sz: 2},
+      {x: -14, z: -26, sx: 2, sz: 22}, {x: 14, z: -26, sx: 2, sz: 22},
+      {x: -14, z: 26, sx: 2, sz: 22}, {x: 14, z: 26, sx: 2, sz: 22},
+      {x: -30, z: 0, sx: 18, sz: 2}, {x: 30, z: 0, sx: 18, sz: 2}
     ];
-    castleWalls.forEach(w=>{
+    castleWalls.forEach(w => {
       const m = mesh(Box(w.sx, 6.5, w.sz), wallMat, w.x, 3.25, w.z);
       worldGroup.add(m);
-      colliders.push({box:new THREE.Box3().setFromObject(m)});
+      colliders.push({box: new THREE.Box3().setFromObject(m)});
     });
-    roomDefs.forEach(r=>{
+    roomDefs.forEach(r => {
       const torch = new THREE.PointLight(0xffaa44, 1.8, 16);
       torch.position.set(r.x, 4, r.z);
       worldGroup.add(torch);
       const post = mesh(Cyl(.4, .5, 5, 8), wallMat, r.x, 2.5, r.z);
       worldGroup.add(post);
-      colliders.push({box:new THREE.Box3().setFromObject(post)});
+      colliders.push({box: new THREE.Box3().setFromObject(post)});
     });
-  } else if (themeKey==='snow'){
-    const treeTrunk = M(0x422a1d, {r:.9});
-    const leaves = M(0x284f3c, {r:.7});
-    const snowTop = M(0xf0f7fc, {r:.9});
+  } else if (themeKey === 'snow') {
+    const treeTrunk = M(0x422a1d, {r: .9});
+    const leaves = M(0x284f3c, {r: .7});
+    const snowTop = M(0xf0f7fc, {r: .9});
     zones = [
-      {name:'ลานหิมะกลาง', x:0, z:0, r:12},
-      {name:'ป่าสนเหนือ', x:0, z:-28, r:14},
-      {name:'หุบเขาเยือกแข็ง', x:-28, z:0, r:14},
-      {name:'ลานกวางเรนเดียร์', x:28, z:0, r:14},
-      {name:'ทางแยกต้นสนสามต้น', x:0, z:28, r:14}
+      {name: 'ลานหิมะกลาง', x: 0, z: 0, r: 12},
+      {name: 'ป่าสนเหนือ', x: 0, z: -28, r: 14},
+      {name: 'หุบเขาเยือกแข็ง', x: -28, z: 0, r: 14},
+      {name: 'ลานกวางเรนเดียร์', x: 28, z: 0, r: 14},
+      {name: 'ทางแยกต้นสนสามต้น', x: 0, z: 28, r: 14}
     ];
-    for(let i=0; i<65; i++){
-      const ang = Math.random()*Math.PI*2;
+    for (let i = 0; i < 65; i++) {
+      const ang = Math.random() * Math.PI * 2;
       const dist = rand(9, 44);
-      const tx = Math.cos(ang)*dist, tz = Math.sin(ang)*dist;
-      if (Math.hypot(tx,tz) < 7) continue;
+      const tx = Math.cos(ang) * dist, tz = Math.sin(ang) * dist;
+      if (Math.hypot(tx, tz) < 7) continue;
       const tree = G();
       const trunk = mesh(Cyl(.35, .5, 2.5, 8), treeTrunk, 0, 1.25, 0);
       const c1 = mesh(Cone(2.2, 2.5, 8), leaves, 0, 3, 0);
@@ -751,76 +903,77 @@ function buildThemeWorld(themeKey){
       const hit = mesh(Cyl(.8, .8, 6, 6), boundMat, tx, 3, tz);
       hit.visible = false;
       worldGroup.add(hit);
-      colliders.push({box:new THREE.Box3().setFromObject(hit)});
+      colliders.push({box: new THREE.Box3().setFromObject(hit)});
     }
-  } else if (themeKey==='maze'){
-    const hedgeMat = M(0x1e501a, {r:.85});
+  } else if (themeKey === 'maze') {
+    const hedgeMat = M(0x1e501a, {r: .85});
     zones = [
-      {name:'ลานน้ำพุใจกลาง', x:0, z:0, r:10},
-      {name:'เขาวงกตทิศเหนือ', x:0, z:-26, r:12},
-      {name:'เขาวงกตทิศใต้', x:0, z:26, r:12},
-      {name:'ซุ้มกุหลาบตะวันตก', x:-26, z:0, r:12},
-      {name:'ทางออกลับตะวันออก', x:26, z:0, r:12}
+      {name: 'ลานน้ำพุใจกลาง', x: 0, z: 0, r: 10},
+      {name: 'เขาวงกตทิศเหนือ', x: 0, z: -26, r: 12},
+      {name: 'เขาวงกตทิศใต้', x: 0, z: 26, r: 12},
+      {name: 'ซุ้มกุหลาบตะวันตก', x: -26, z: 0, r: 12},
+      {name: 'ทางออกลับตะวันออก', x: 26, z: 0, r: 12}
     ];
     const fountainBase = mesh(Cyl(3, 3.2, .8, 16), M(0xcccccc), 0, .4, 0);
-    const water = mesh(Cyl(2.7, 2.7, .1, 16), M(0x29b6f6,{t:.7,r:.1}), 0, .8, 0);
+    const water = mesh(Cyl(2.7, 2.7, .1, 16), M(0x29b6f6, {t: .7, r: .1}), 0, .8, 0);
     const pillar = mesh(Cyl(.5, .6, 2.4, 12), M(0xbbbbbb), 0, 1.2, 0);
     worldGroup.add(fountainBase, water, pillar);
-    colliders.push({box:new THREE.Box3().setFromObject(fountainBase)});
+    colliders.push({box: new THREE.Box3().setFromObject(fountainBase)});
+
     const hedges = [
-      {x:0, z:-12, sx:16, sz:2.5}, {x:0, z:12, sx:16, sz:2.5},
-      {x:-12, z:0, sx:2.5, sz:16}, {x:12, z:0, sx:2.5, sz:16},
-      {x:-18, z:-24, sx:18, sz:2.5}, {x:18, z:-24, sx:18, sz:2.5},
-      {x:-18, z:24, sx:18, sz:2.5}, {x:18, z:24, sx:18, sz:2.5},
-      {x:-24, z:-10, sx:2.5, sz:20}, {x:24, z:-10, sx:2.5, sz:20},
-      {x:-24, z:14, sx:2.5, sz:18}, {x:24, z:14, sx:2.5, sz:18},
-      {x:0, z:-36, sx:36, sz:2.5}, {x:0, z:36, sx:36, sz:2.5},
-      {x:-36, z:0, sx:2.5, sz:36}, {x:36, z:0, sx:2.5, sz:36}
+      {x: 0, z: -12, sx: 16, sz: 2.5}, {x: 0, z: 12, sx: 16, sz: 2.5},
+      {x: -12, z: 0, sx: 2.5, sz: 16}, {x: 12, z: 0, sx: 2.5, sz: 16},
+      {x: -18, z: -24, sx: 18, sz: 2.5}, {x: 18, z: -24, sx: 18, sz: 2.5},
+      {x: -18, z: 24, sx: 18, sz: 2.5}, {x: 18, z: 24, sx: 18, sz: 2.5},
+      {x: -24, z: -10, sx: 2.5, sz: 20}, {x: 24, z: -10, sx: 2.5, sz: 20},
+      {x: -24, z: 14, sx: 2.5, sz: 18}, {x: 24, z: 14, sx: 2.5, sz: 18},
+      {x: 0, z: -36, sx: 36, sz: 2.5}, {x: 0, z: 36, sx: 36, sz: 2.5},
+      {x: -36, z: 0, sx: 2.5, sz: 36}, {x: 36, z: 0, sx: 2.5, sz: 36}
     ];
-    hedges.forEach(h=>{
+    hedges.forEach(h => {
       const m = mesh(Box(h.sx, 4, h.sz), hedgeMat, h.x, 2, h.z);
       worldGroup.add(m);
-      colliders.push({box:new THREE.Box3().setFromObject(m)});
+      colliders.push({box: new THREE.Box3().setFromObject(m)});
     });
-  } else if (themeKey==='ocean'){
-    const rockMat = M(0x3b424c, {r:.8});
-    const coralMat1 = M(0xff4081, {r:.6});
-    const coralMat2 = M(0x00e5ff, {r:.5});
+  } else if (themeKey === 'ocean') {
+    const rockMat = M(0x3b424c, {r: .8});
+    const coralMat1 = M(0xff4081, {r: .6});
+    const coralMat2 = M(0x00e5ff, {r: .5});
     zones = [
-      {name:'แนวปะการังสีฟ้า', x:0, z:0, r:12},
-      {name:'โพรงถ้ำใต้สมุทร 1', x:-26, z:-26, r:11},
-      {name:'โพรงถ้ำใต้สมุทร 2', x:26, z:26, r:11},
-      {name:'ทุ่งดอกไม้ทะเล', x:26, z:-24, r:11},
-      {name:'ลานหอยมุกโบราณ', x:-26, z:24, r:11}
+      {name: 'แนวปะการังสีฟ้า', x: 0, z: 0, r: 12},
+      {name: 'โพรงถ้ำใต้สมุทร 1', x: -26, z: -26, r: 11},
+      {name: 'โพรงถ้ำใต้สมุทร 2', x: 26, z: 26, r: 11},
+      {name: 'ทุ่งดอกไม้ทะเล', x: 26, z: -24, r: 11},
+      {name: 'ลานหอยมุกโบราณ', x: -26, z: 24, r: 11}
     ];
-    const caves = [{x:-26, z:-26}, {x:26, z:26}];
-    caves.forEach(c=>{
-      const caveArch = mesh(Tor(5, 1.8, 8, 16, Math.PI), rockMat, c.x, 1, c.z, 0, Math.PI/4);
+    const caves = [{x: -26, z: -26}, {x: 26, z: 26}];
+    caves.forEach(c => {
+      const caveArch = mesh(Tor(5, 1.8, 8, 16, Math.PI), rockMat, c.x, 1, c.z, 0, Math.PI / 4);
       worldGroup.add(caveArch);
-      const postL = mesh(Cyl(1.5, 1.8, 6, 8), rockMat, c.x-3.5, 3, c.z-3.5);
-      const postR = mesh(Cyl(1.5, 1.8, 6, 8), rockMat, c.x+3.5, 3, c.z+3.5);
+      const postL = mesh(Cyl(1.5, 1.8, 6, 8), rockMat, c.x - 3.5, 3, c.z - 3.5);
+      const postR = mesh(Cyl(1.5, 1.8, 6, 8), rockMat, c.x + 3.5, 3, c.z + 3.5);
       worldGroup.add(postL, postR);
-      colliders.push({box:new THREE.Box3().setFromObject(postL)}, {box:new THREE.Box3().setFromObject(postR)});
+      colliders.push({box: new THREE.Box3().setFromObject(postL)}, {box: new THREE.Box3().setFromObject(postR)});
     });
-    for(let i=0; i<45; i++){
+    for (let i = 0; i < 45; i++) {
       const rx = rand(-40, 40), rz = rand(-40, 40);
       if (Math.hypot(rx, rz) < 6) continue;
       const scale = rand(1.2, 3.2);
-      const rock = mesh(Sph(scale, 8, 6), rockMat, rx, scale*.8, rz);
+      const rock = mesh(Sph(scale, 8, 6), rockMat, rx, scale * .8, rz);
       rock.scale.set(1.2, .8, 1);
       worldGroup.add(rock);
-      colliders.push({box:new THREE.Box3().setFromObject(rock)});
-      if (Math.random()<.6){
-        const coral = mesh(Cone(.4, 1.2, 6), (i%2===0?coralMat1:coralMat2), rx+rand(-.5,.5), scale*1.5, rz+rand(-.5,.5));
+      colliders.push({box: new THREE.Box3().setFromObject(rock)});
+      if (Math.random() < .6) {
+        const coral = mesh(Cone(.4, 1.2, 6), (i % 2 === 0 ? coralMat1 : coralMat2), rx + rand(-.5, .5), scale * 1.5, rz + rand(-.5, .5));
         worldGroup.add(coral);
       }
     }
   }
 
   itemSpawns = [];
-  for(let x=-34; x<=34; x+=17){
-    for(let z=-34; z<=34; z+=17){
-      if(Math.hypot(x,z) > 4) itemSpawns.push({x:x+rand(-2,2), z:z+rand(-2,2)});
+  for (let x = -34; x <= 34; x += 17) {
+    for (let z = -34; z <= 34; z += 17) {
+      if (Math.hypot(x, z) > 4) itemSpawns.push({x: x + rand(-2, 2), z: z + rand(-2, 2)});
     }
   }
   scene.add(worldGroup);
@@ -830,13 +983,13 @@ function buildThemeWorld(themeKey){
    7) หน้าตัวอย่างตัวละคร (3D Preview)
    ========================================================= */
 let prevRenderer, prevScene, prevCam, prevChar;
-function initPreview(){
+function initPreview() {
   const canvas = $('preview');
-  prevRenderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+  prevRenderer = new THREE.WebGLRenderer({canvas, antialias: true, alpha: true});
   prevRenderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
   prevRenderer.setSize(260, 320, false);
   prevScene = new THREE.Scene();
-  prevCam = new THREE.PerspectiveCamera(45, 260/320, .1, 20);
+  prevCam = new THREE.PerspectiveCamera(45, 260 / 320, .1, 20);
   prevCam.position.set(0, 1.45, 4.2);
   prevCam.lookAt(0, 1.35, 0);
   const light = new THREE.DirectionalLight(0xffffff, 1.6);
@@ -844,8 +997,7 @@ function initPreview(){
   const hemi = new THREE.HemisphereLight(0xffffff, 0x555566, 1);
   prevScene.add(light, hemi);
 }
-
-function updatePreview(){
+function updatePreview() {
   if (prevChar) prevScene.remove(prevChar);
   prevChar = buildCharacter(spById(curSpeciesId), curThemeKey, curGender);
   prevScene.add(prevChar);
@@ -868,35 +1020,34 @@ let timerInterval = null;
 const keys = {};
 const playerPos = new THREE.Vector3(0, 0, 4);
 let playerYaw = 0;
-
 let camDist = 11.0;
 let camYaw = 0;
 let camPitch = 0.38;
 
-function switchScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+function switchScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   if (id) $(id).classList.add('active');
 }
 
-function spawnItems(targetId){
-  activeItems.forEach(it=>scene.remove(it.mesh));
+function spawnItems(targetId) {
+  activeItems.forEach(it => scene.remove(it.mesh));
   activeItems = [];
   const thItems = THEMES[curThemeKey].items;
   const list = [targetId, targetId, targetId, targetId];
-  while(list.length < 14){
+  while (list.length < 14) {
     list.push(pick(thItems));
   }
   shuffle(list);
-  list.forEach((id, idx)=>{
+  list.forEach((id, idx) => {
     const pt = itemSpawns[idx % itemSpawns.length];
     const m = createItemMesh(id);
-    m.position.set(pt.x + rand(-1.5,1.5), 0, pt.z + rand(-1.5,1.5));
+    m.position.set(pt.x + rand(-1.5, 1.5), 0, pt.z + rand(-1.5, 1.5));
     scene.add(m);
-    activeItems.push({ id, mesh:m, baseY:m.position.y });
+    activeItems.push({ id, mesh: m, baseY: m.position.y });
   });
 }
 
-function startGame(){
+function startGame() {
   switchScreen(null);
   $('hud').classList.add('show');
   isPlaying = true;
@@ -909,7 +1060,6 @@ function startGame(){
   $('badCnt').textContent = '0';
   $('timer').textContent = '3:00';
   $('timer').classList.remove('low');
-
   targetItemId = pick(THEMES[curThemeKey].items);
   $('targetIcon').textContent = ITEMS[targetItemId].icon;
   $('targetText').textContent = ITEMS[targetItemId].name;
@@ -928,17 +1078,17 @@ function startGame(){
   A.play(curThemeKey);
 
   clearInterval(timerInterval);
-  timerInterval = setInterval(()=>{
+  timerInterval = setInterval(() => {
     if (!isPlaying) return;
     timeLeft--;
-    const m = Math.floor(timeLeft/60);
-    const s = timeLeft%60;
-    $('timer').textContent = `${m}:${s<10?'0':''}${s}`;
-    if (timeLeft <= 10){
+    const m = Math.floor(timeLeft / 60);
+    const s = timeLeft % 60;
+    $('timer').textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+    if (timeLeft <= 10) {
       $('timer').classList.add('low');
       A.tick();
     }
-    if (timeLeft <= 0){
+    if (timeLeft <= 0) {
       endGame();
     }
   }, 1000);
@@ -946,19 +1096,19 @@ function startGame(){
   handleResize();
 }
 
-function tryCollect(){
+function tryCollect() {
   if (!isPlaying) return;
   let nearest = null;
   let minDist = 3.6;
-  activeItems.forEach(it=>{
+  activeItems.forEach(it => {
     const d = playerPos.distanceTo(it.mesh.position);
-    if (d < minDist){
+    if (d < minDist) {
       minDist = d;
       nearest = it;
     }
   });
-  if (!nearest) return;
 
+  if (!nearest) return;
   A.bag();
   const bagIc = $('bagIcon');
   bagIc.classList.remove('pop');
@@ -966,7 +1116,7 @@ function tryCollect(){
   bagIc.classList.add('pop');
 
   const isCorrect = (nearest.id === targetItemId);
-  if (isCorrect){
+  if (isCorrect) {
     score += 100;
     goodCount++;
     $('goodCnt').textContent = goodCount;
@@ -988,34 +1138,34 @@ function tryCollect(){
   const nextId = (Math.random() < 0.45) ? targetItemId : pick(THEMES[curThemeKey].items);
   const pt = pick(itemSpawns);
   const nm = createItemMesh(nextId);
-  nm.position.set(pt.x + rand(-2,2), 0, pt.z + rand(-2,2));
+  nm.position.set(pt.x + rand(-2, 2), 0, pt.z + rand(-2, 2));
   scene.add(nm);
-  activeItems.push({ id:nextId, mesh:nm, baseY:0 });
+  activeItems.push({ id: nextId, mesh: nm, baseY: 0 });
 }
 
-function showPopup(text, isGood){
+function showPopup(text, isGood) {
   const el = document.createElement('div');
-  el.className = `popup ${isGood?'good':'bad'}`;
+  el.className = `popup ${isGood ? 'good' : 'bad'}`;
   el.textContent = text;
-  el.style.left = (innerWidth/2 + rand(-30,30)) + 'px';
-  el.style.top = (innerHeight/2 + rand(-20,20)) + 'px';
+  el.style.left = (innerWidth / 2 + rand(-30, 30)) + 'px';
+  el.style.top = (innerHeight / 2 + rand(-20, 20)) + 'px';
   document.body.appendChild(el);
-  setTimeout(()=>el.remove(), 1000);
+  setTimeout(() => el.remove(), 1000);
 }
 
-function endGame(){
+function endGame() {
   isPlaying = false;
   clearInterval(timerInterval);
   $('hud').classList.remove('show');
   A.fanfare();
 
   const allKey = 'th3d_all_best';
-  const themeKey = `th3d_best_${curThemeKey}`;
-  const prevAll = parseInt(localStorage.getItem(allKey)||'0', 10);
-  const prevTheme = parseInt(localStorage.getItem(themeKey)||'0', 10);
+  const tKey = `th3d_best_${curThemeKey}`;
+  const prevAll = parseInt(localStorage.getItem(allKey) || '0', 10);
+  const prevTheme = parseInt(localStorage.getItem(tKey) || '0', 10);
   const isNew = score > prevAll;
   if (score > prevAll) localStorage.setItem(allKey, score);
-  if (score > prevTheme) localStorage.setItem(themeKey, score);
+  if (score > prevTheme) localStorage.setItem(tKey, score);
 
   $('endTheme').textContent = `โลก: ${THEMES[curThemeKey].name}`;
   $('endScore').textContent = score;
@@ -1028,55 +1178,154 @@ function endGame(){
 }
 
 /* =========================================================
-   9) การตรวจจับโซนปัจจุบัน และการวาดแผนที่ภาพรวม
+   9) การตรวจจับโซนปัจจุบัน และการวาดแผนที่ภาพรวม (Big Map)
    ========================================================= */
-function getCurrentZoneName(){
-  for (const z of zones){
-    if (Math.hypot(playerPos.x - z.x, playerPos.z - z.z) < (z.r || 10)){
+function getCurrentZoneName() {
+  for (const z of zones) {
+    if (Math.hypot(playerPos.x - z.x, playerPos.z - z.z) < (z.r || 10)) {
       return z.name;
     }
   }
   return THEMES[curThemeKey].defZone;
 }
 
-function drawMap(canvas, isBig=true){
+function drawMap(canvas) {
   const ctx = canvas.getContext('2d');
   const w = canvas.width, h = canvas.height;
   ctx.clearRect(0, 0, w, h);
-  ctx.fillStyle = (curThemeKey==='magic') ? '#1e1b29' : (curThemeKey==='snow') ? '#cbe0f2' : (curThemeKey==='maze') ? '#213a1e' : '#0c2438';
+
+  // พื้นหลังแผนที่ตามธีม
+  ctx.fillStyle = (curThemeKey === 'magic') ? '#191526' :
+                  (curThemeKey === 'snow')  ? '#bad4ed' :
+                  (curThemeKey === 'maze')  ? '#1c3319' : '#0a1d2e';
   ctx.fillRect(0, 0, w, h);
 
+  // ขอบเขตและเส้นตารางแผนที่
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= w; i += 54) {
+    ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(w, i); ctx.stroke();
+  }
+
+  // แปลงพิกัด 3D (-48 ถึง 48) เป็นพิกัดแคนวาส 2D
   const toC = (x, z) => ({
-    cx: (x + 50) / 100 * w,
-    cy: (z + 50) / 100 * h
+    cx: ((x + 48) / 96) * (w - 40) + 20,
+    cy: ((z + 48) / 96) * (h - 40) + 20
   });
 
-  zones.forEach(z=>{
+  // ขอบกำแพงเขตพื้นที่
+  const pMin = toC(-48, -48);
+  const pMax = toC(48, 48);
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 2.5;
+  ctx.strokeRect(pMin.cx, pMin.cy, pMax.cx - pMin.cx, pMax.cy - pMin.cy);
+
+  // วาดโซนและชื่อโซน
+  zones.forEach(z => {
     const p = toC(z.x, z.z);
-    ctx.fillStyle = 'rgba(255,255,255,0.14)';
+    const rad = ((z.r || 10) / 96) * (w - 40);
+
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
     ctx.beginPath();
-    ctx.arc(p.cx, p.cy, (z.r/100)*w, 0, Math.PI*2);
+    ctx.arc(p.cx, p.cy, rad, 0, Math.PI * 2);
     ctx.fill();
+
+    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
     ctx.fillStyle = '#ffffff';
-    ctx.font = '13px Mitr';
+    ctx.font = 'bold 12px Mitr, sans-serif';
     ctx.textAlign = 'center';
+    ctx.shadowColor = 'rgba(0,0,0,0.8)';
+    ctx.shadowBlur = 4;
     ctx.fillText(z.name, p.cx, p.cy + 4);
+    ctx.shadowBlur = 0;
   });
 
+  // แสดงตำแหน่งของไอเทมบนแผนที่ (ไอเทมเป้าหมายเน้นสีทอง)
+  activeItems.forEach(it => {
+    const ip = toC(it.mesh.position.x, it.mesh.position.z);
+    const isTarget = (it.id === targetItemId);
+    ctx.beginPath();
+    ctx.arc(ip.cx, ip.cy, isTarget ? 5 : 3, 0, Math.PI * 2);
+    ctx.fillStyle = isTarget ? '#ffd23f' : 'rgba(255,255,255,0.6)';
+    ctx.fill();
+    if (isTarget) {
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+  });
+
+  // วาดตำแหน่งของผู้เล่น และลูกศรบอกทิศทาง (Player GPS Arrow)
   const me = toC(playerPos.x, playerPos.z);
+  const curTime = performance.now() / 1000;
+
+  // วงคลื่นเรดาร์กะพริบรอบตัวผู้เล่น
+  const pulseWave = (curTime * 1.5) % 1;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(me.cx, me.cy, 12 + pulseWave * 20, 0, Math.PI * 2);
+  ctx.strokeStyle = `rgba(255, 42, 141, ${1 - pulseWave})`;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.restore();
+
+  // ลูกศรบอกทิศทางแบบ GPS หมุนตามทิศทางหน้าตัวละครจริง
   ctx.save();
   ctx.translate(me.cx, me.cy);
   ctx.rotate(Math.PI - playerYaw);
-  ctx.fillStyle = '#ff2a8d';
+
+  // เงาเรืองแสงของลูกศร
+  ctx.shadowColor = '#ff2a8d';
+  ctx.shadowBlur = 12;
+
+  // โครงร่างและตัวลูกศรหลัก
   ctx.beginPath();
-  ctx.moveTo(0, -9);
-  ctx.lineTo(7, 7);
-  ctx.lineTo(-7, 7);
+  ctx.moveTo(0, -20);      // ยอดแหลมของลูกศร (ด้านหน้า)
+  ctx.lineTo(13, 14);      // ปีกขวา
+  ctx.lineTo(0, 7);        // รอยเว้าตรงกลาง
+  ctx.lineTo(-13, 14);     // ปีกซ้าย
   ctx.closePath();
+
+  ctx.fillStyle = '#ff2a8d';
   ctx.fill();
   ctx.strokeStyle = '#ffffff';
-  ctx.lineWidth = 2;
+  ctx.lineWidth = 3;
   ctx.stroke();
+
+  // ไฮไลต์สีขาวใจกลางลูกศรเพิ่มมิติ
+  ctx.beginPath();
+  ctx.moveTo(0, -14);
+  ctx.lineTo(7, 10);
+  ctx.lineTo(0, 5);
+  ctx.lineTo(-7, 10);
+  ctx.closePath();
+  ctx.fillStyle = '#ffffff';
+  ctx.fill();
+  ctx.restore();
+
+  // ป้ายกำกับ "📍 ตัวคุณ"
+  ctx.save();
+  ctx.font = 'bold 12px Mitr, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  ctx.fillStyle = '#ffd23f';
+  ctx.shadowColor = '#000000';
+  ctx.shadowBlur = 5;
+  ctx.fillText('📍 ตัวคุณ', me.cx, me.cy - 24);
+  ctx.restore();
+
+  // เข็มทิศจำลองมุมขวาบน
+  ctx.save();
+  ctx.translate(w - 32, 32);
+  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.beginPath(); ctx.arc(0, 0, 18, 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = '#ff5a5a'; ctx.font = 'bold 11px Mitr, sans-serif';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText('N', 0, -6);
   ctx.restore();
 }
 
@@ -1086,60 +1335,66 @@ function drawMap(canvas, isBig=true){
 const clock = new THREE.Clock();
 const playerBox = new THREE.Box3();
 
-function checkCollision(pos){
+function checkCollision(pos) {
   playerBox.setFromCenterAndSize(
     new THREE.Vector3(pos.x, 1, pos.z),
     new THREE.Vector3(1.2, 2, 1.2)
   );
-  for(const c of colliders){
+  for (const c of colliders) {
     if (c.box.intersectsBox(playerBox)) return true;
   }
   return false;
 }
 
-function animate(){
+function animate() {
   requestAnimationFrame(animate);
   const dt = Math.min(clock.getDelta(), 0.05);
 
-  if (prevRenderer && $('charSelect').classList.contains('active')){
+  if (prevRenderer && $('charSelect').classList.contains('active')) {
     if (prevChar) prevChar.rotation.y += dt * 0.9;
     prevRenderer.render(prevScene, prevCam);
   }
 
-  if (isPlaying && playerMesh){
+  if (isPlaying && playerMesh) {
     let inputX = 0, inputZ = 0;
     if (keys['KeyW'] || keys['ArrowUp']) inputZ -= 1;
     if (keys['KeyS'] || keys['ArrowDown']) inputZ += 1;
     if (keys['KeyA'] || keys['ArrowLeft']) inputX -= 1;
     if (keys['KeyD'] || keys['ArrowRight']) inputX += 1;
 
-    if (touchMove.active){
+    if (touchMove.active) {
       inputX += touchMove.x;
       inputZ += touchMove.y;
     }
 
     const inputLen = Math.hypot(inputX, inputZ);
-    if (inputLen > 0.05){
+    if (inputLen > 0.05) {
       const nx = inputX / (inputLen > 1 ? inputLen : 1);
       const nz = inputZ / (inputLen > 1 ? inputLen : 1);
-
       const moveX = nx * Math.cos(camYaw) + nz * Math.sin(camYaw);
       const moveZ = -nx * Math.sin(camYaw) + nz * Math.cos(camYaw);
-
       const targetYaw = Math.atan2(moveX, moveZ);
       playerYaw = lerpAngle(playerYaw, targetYaw, Math.min(1, 14 * dt));
 
-      const isSprint = keys['ShiftLeft'] || keys['ShiftRight'];
-      const curSpeed = (isSprint ? 12 : 7.5);
+      // ตรวจสอบการวิ่งสปีด (กด Shift หรือลากจอยสติ๊กไปสุดขอบ)
+      const isKeySprint = keys['ShiftLeft'] || keys['ShiftRight'];
+      const isJoySprint = touchMove.active && touchMove.sprinting;
+      const isSprint = isKeySprint || isJoySprint;
+
+      // ปรับความเร็ว: เดินปกติ 7.5 | เร่งสปีดวิ่ง 13.5
+      const curSpeed = isSprint ? 13.5 : 7.5;
       const dx = moveX * curSpeed * dt;
       const dz = moveZ * curSpeed * dt;
 
       const nextX = playerPos.x + dx;
-      if (!checkCollision({x:nextX, z:playerPos.z})) playerPos.x = nextX;
+      if (!checkCollision({x: nextX, z: playerPos.z})) playerPos.x = nextX;
       const nextZ = playerPos.z + dz;
-      if (!checkCollision({x:playerPos.x, z:nextZ})) playerPos.z = nextZ;
+      if (!checkCollision({x: playerPos.x, z: nextZ})) playerPos.z = nextZ;
 
-      playerMesh.position.y = Math.abs(Math.sin(clock.getElapsedTime() * 14)) * 0.22;
+      // เอฟเฟกต์กระโดดดุ๊กดิ๊กตามจังหวะการก้าว (วิ่งจะก้าวถี่ขึ้น)
+      const stepFreq = isSprint ? 20 : 13;
+      const stepH = isSprint ? 0.3 : 0.22;
+      playerMesh.position.y = Math.abs(Math.sin(clock.getElapsedTime() * stepFreq)) * stepH;
     } else {
       playerMesh.position.y = 0;
     }
@@ -1149,25 +1404,25 @@ function animate(){
     playerMesh.rotation.y = playerYaw;
 
     const t = clock.getElapsedTime();
-    activeItems.forEach(it=>{
+    activeItems.forEach(it => {
       it.mesh.rotation.y += dt * 1.6;
-      it.mesh.position.y = it.baseY + Math.sin(t*3 + it.mesh.position.x)*0.15;
+      it.mesh.position.y = it.baseY + Math.sin(t * 3 + it.mesh.position.x) * 0.15;
     });
 
-    // จุดเล็งกลางลำตัวละคร
+    // กล้องติดตามตัวละคร
     const targetY = playerPos.y + 1.25;
     const cx = playerPos.x + Math.sin(camYaw) * Math.cos(camPitch) * camDist;
     const cy = targetY + Math.sin(camPitch) * camDist;
     const cz = playerPos.z + Math.cos(camYaw) * Math.cos(camPitch) * camDist;
-
     camera.position.set(cx, cy, cz);
     camera.lookAt(playerPos.x, targetY, playerPos.z);
 
     let near = null;
-    activeItems.forEach(it=>{
+    activeItems.forEach(it => {
       if (playerPos.distanceTo(it.mesh.position) < 3.2) near = it;
     });
-    if (near){
+
+    if (near) {
       $('prompt').style.display = 'block';
       $('prompt').innerHTML = `กด <b>[E]</b> หรือแตะเพื่อเก็บ <b>${ITEMS[near.id].name}</b>`;
     } else {
@@ -1175,25 +1430,26 @@ function animate(){
     }
 
     $('zoneName').textContent = `📍 ${getCurrentZoneName()}`;
-    if ($('bigmap').classList.contains('show')) drawMap($('bigCanvas'), true);
+    if ($('bigmap').classList.contains('show')) drawMap($('bigCanvas'));
   }
+
   renderer.render(scene, camera);
 }
 
 /* =========================================================
-   11) การจัดการ Multi-Touch (เดินพร้อมหมุนกล้องลื่นไหล)
+   11) การจัดการ Virtual Joystick & Multi-Touch (เร่งสปีดเมื่อลากสุดขอบ)
    ========================================================= */
-const touchMove = {active:false, x:0, y:0};
+const touchMove = { active: false, x: 0, y: 0, sprinting: false, distRatio: 0 };
 let camPointerId = null;
 let joyPointerId = null;
 let lastCamX = 0, lastCamY = 0;
 
-function initUI(){
+function initUI() {
   const list = $('themeList');
   list.innerHTML = '';
-  for(const k in THEMES){
+  for (const k in THEMES) {
     const th = THEMES[k];
-    const best = localStorage.getItem(`th3d_best_${k}`)||'0';
+    const best = localStorage.getItem(`th3d_best_${k}`) || '0';
     const card = document.createElement('div');
     card.className = 'theme-card';
     card.style.background = th.bg;
@@ -1211,30 +1467,30 @@ function initUI(){
     list.appendChild(card);
   }
 
-  const allB = localStorage.getItem('th3d_all_best')||'0';
+  const allB = localStorage.getItem('th3d_all_best') || '0';
   $('allBest').innerHTML = `🏆 สถิติสูงสุดตลอดกาล: <b>${allB}</b> คะแนน`;
 
   const spList = $('speciesList');
   spList.innerHTML = '';
-  SPECIES.forEach(s=>{
+  SPECIES.forEach(s => {
     const d = document.createElement('div');
-    d.className = `sp ${s.id===curSpeciesId?'sel':''}`;
+    d.className = `sp ${s.id === curSpeciesId ? 'sel' : ''}`;
     d.innerHTML = `<span class="e">${s.icon}</span>${s.name}`;
     d.onclick = () => {
       A.click();
       curSpeciesId = s.id;
-      document.querySelectorAll('.sp').forEach(el=>el.classList.remove('sel'));
+      document.querySelectorAll('.sp').forEach(el => el.classList.remove('sel'));
       d.classList.add('sel');
       updatePreview();
     };
     spList.appendChild(d);
   });
 
-  document.querySelectorAll('.gbtn').forEach(btn=>{
+  document.querySelectorAll('.gbtn').forEach(btn => {
     if (btn.dataset.g === curGender) btn.classList.add('sel');
     btn.onclick = () => {
       A.click();
-      document.querySelectorAll('.gbtn').forEach(b=>b.classList.remove('sel'));
+      document.querySelectorAll('.gbtn').forEach(b => b.classList.remove('sel'));
       btn.classList.add('sel');
       curGender = btn.dataset.g;
       updatePreview();
@@ -1242,37 +1498,37 @@ function initUI(){
   });
 }
 
-function openCharSelect(){
+function openCharSelect() {
   switchScreen('charSelect');
   $('csTitle').textContent = `ธีม: ${THEMES[curThemeKey].name}`;
   $('csOutfit').textContent = `ชุดประจำธีม: ${THEMES[curThemeKey].outfit}`;
   updatePreview();
 }
 
-// ควบคุมคีย์บอร์ด
-window.addEventListener('keydown', e=>{
+// แป้นพิมพ์
+window.addEventListener('keydown', e => {
   keys[e.code] = true;
-  if (e.code==='KeyE' || e.code==='Space'){
+  if (e.code === 'KeyE' || e.code === 'Space') {
     tryCollect();
   }
-  if (e.code==='KeyM' && isPlaying){
+  if (e.code === 'KeyM' && isPlaying) {
     toggleMap();
   }
 });
-window.addEventListener('keyup', e=>{ keys[e.code] = false; });
+window.addEventListener('keyup', e => { keys[e.code] = false; });
 
-// ระบบหมุนมุมกล้องอิสระ ไม่แย่ง Event กับ Joystick
-window.addEventListener('pointerdown', e=>{
+// หมุนมุมกล้องอิสระ
+window.addEventListener('pointerdown', e => {
   if (e.target.closest('#hud button, .screen, #bigmap, #muteBtn, #joy, #tCollect')) return;
-  if (camPointerId === null){
+  if (camPointerId === null) {
     camPointerId = e.pointerId;
     lastCamX = e.clientX;
     lastCamY = e.clientY;
   }
 });
 
-window.addEventListener('pointermove', e=>{
-  if (e.pointerId === camPointerId){
+window.addEventListener('pointermove', e => {
+  if (e.pointerId === camPointerId) {
     const dx = e.clientX - lastCamX;
     const dy = e.clientY - lastCamY;
     lastCamX = e.clientX;
@@ -1288,15 +1544,16 @@ const endCamPointer = e => {
 window.addEventListener('pointerup', endCamPointer);
 window.addEventListener('pointercancel', endCamPointer);
 
-// หมุนล้อเมาส์ซูมเข้า/ออก
-window.addEventListener('wheel', e=>{
+// หมุนล้อเมาส์เพื่อซูม
+window.addEventListener('wheel', e => {
   camDist = clamp(camDist + (e.deltaY > 0 ? 0.8 : -0.8), 6.0, 22.0);
-}, {passive:true});
+}, {passive: true});
 
-// ระบบ Virtual Joystick แยก Pointer อย่างเป็นอิสระ
+// ระบบ Virtual Joystick ที่รองรับการเร่งสปีดวิ่งเมื่อเลื่อนสุดขอบ
 const joy = $('joy'), knob = $('knob');
+const MAX_JOY_DIST = 42; // ระยะรัศมีสูงสุดของปุ่มควบคุม
 
-joy.addEventListener('pointerdown', e=>{
+joy.addEventListener('pointerdown', e => {
   e.stopPropagation();
   joyPointerId = e.pointerId;
   joy.setPointerCapture(e.pointerId);
@@ -1304,47 +1561,67 @@ joy.addEventListener('pointerdown', e=>{
   updateJoy(e);
 });
 
-joy.addEventListener('pointermove', e=>{
-  if (e.pointerId === joyPointerId && touchMove.active){
+joy.addEventListener('pointermove', e => {
+  if (e.pointerId === joyPointerId && touchMove.active) {
     updateJoy(e);
   }
 });
 
 const endJoyPointer = e => {
-  if (e.pointerId === joyPointerId){
+  if (e.pointerId === joyPointerId) {
     touchMove.active = false;
+    touchMove.sprinting = false;
+    touchMove.distRatio = 0;
     touchMove.x = 0; touchMove.y = 0;
     knob.style.transform = 'translate(0px, 0px)';
+    knob.classList.remove('sprint');
+    joy.classList.remove('sprint');
     joyPointerId = null;
   }
 };
 joy.addEventListener('pointerup', endJoyPointer);
 joy.addEventListener('pointercancel', endJoyPointer);
 
-function updateJoy(e){
+function updateJoy(e) {
   const r = joy.getBoundingClientRect();
-  const cx = r.left + r.width/2, cy = r.top + r.height/2;
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
   const dx = e.clientX - cx, dy = e.clientY - cy;
-  const dist = Math.min(38, Math.hypot(dx, dy));
+  const rawDist = Math.hypot(dx, dy);
+  const dist = Math.min(MAX_JOY_DIST, rawDist);
   const ang = Math.atan2(dy, dx);
   const kx = Math.cos(ang) * dist, ky = Math.sin(ang) * dist;
   knob.style.transform = `translate(${kx}px, ${ky}px)`;
-  touchMove.x = kx / 38;
-  touchMove.y = ky / 38;
+
+  const ratio = dist / MAX_JOY_DIST;
+  touchMove.distRatio = ratio;
+  touchMove.x = (dist > 0) ? (Math.cos(ang) * ratio) : 0;
+  touchMove.y = (dist > 0) ? (Math.sin(ang) * ratio) : 0;
+
+  // หากลากนิ้วออกมาถึง 80% ของขอบจอยขึ้นไป จะเปิดโหมดวิ่งสปีด
+  const shouldSprint = (ratio >= 0.82);
+  touchMove.sprinting = shouldSprint;
+
+  if (shouldSprint) {
+    knob.classList.add('sprint');
+    joy.classList.add('sprint');
+  } else {
+    knob.classList.remove('sprint');
+    joy.classList.remove('sprint');
+  }
 }
 
-if ('ontouchstart' in window || navigator.maxTouchPoints > 0){
+if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
   document.body.classList.add('touch');
 }
 
-function toggleMap(){
+function toggleMap() {
   const bm = $('bigmap');
   const willShow = !bm.classList.contains('show');
   bm.classList.toggle('show');
-  if (willShow) drawMap($('bigCanvas'), true);
+  if (willShow) drawMap($('bigCanvas'));
 }
 
-// ผูกฟังก์ชันปุ่มต่างๆ
+// ผูกปุ่มคำสั่ง
 $('btnStart').onclick = () => { A.init(); A.play('home'); switchScreen('home'); initUI(); };
 $('btnBack').onclick = () => { A.click(); switchScreen('home'); A.play('home'); initUI(); };
 $('btnGo').onclick = () => { A.click(); startGame(); };
